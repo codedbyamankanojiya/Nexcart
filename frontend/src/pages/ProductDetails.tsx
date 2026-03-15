@@ -12,7 +12,7 @@ export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const addToCart = useCartStore((s) => s.addToCart);
+  const addToCart = useCartStore((s) => s.addProductToCart);
   const wishlist = useCartStore((s) => s.wishlist);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
 
@@ -33,7 +33,7 @@ export default function ProductDetails() {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [isImgLoaded, setIsImgLoaded] = useState(false);
 
-  const isWishlisted = product ? wishlist.includes(product.id) : false;
+  const isWishlisted = product ? wishlist.includes(String(product.id)) : false;
 
   const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
@@ -193,7 +193,7 @@ export default function ProductDetails() {
             <button
               type="button"
               onClick={() => {
-                toggleWishlist(product.id);
+                toggleWishlist(String(product.id));
                 toast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
               }}
               className={cn('pk-btn pk-btn-outline h-11 px-4', isWishlisted && 'border-primary text-primary')}

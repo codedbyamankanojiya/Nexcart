@@ -13,8 +13,9 @@ export default function Cart() {
     const clearCart = useCartStore((s) => s.clearCart);
 
     const cartProducts = items.map((item) => ({
-        ...mockProducts.find((p) => p.id === item.id)!,
+        ...mockProducts.find((p) => String(p.id) === item.productId)!,
         quantity: item.quantity,
+        cartItemId: item.id,
     }));
 
     const subtotal = cartProducts.reduce((sum: number, item) => sum + item.price * item.quantity, 0);
@@ -27,14 +28,14 @@ export default function Cart() {
         toast.success('Cart cleared');
     };
 
-    const handleRemoveItem = (id: number, name: string) => {
-        removeFromCart(id);
+    const handleRemoveItem = (cartItemId: string, name: string) => {
+        removeFromCart(cartItemId);
         toast.success(`${name} removed from cart`);
     };
 
-    const handleUpdateQuantity = (id: number, newQuantity: number) => {
+    const handleUpdateQuantity = (cartItemId: string, newQuantity: number) => {
         if (newQuantity < 1) return;
-        setQty(id, newQuantity);
+        setQty(cartItemId, newQuantity);
     };
 
     if (items.length === 0) {
@@ -121,7 +122,7 @@ export default function Cart() {
                                         {/* Quantity Controls */}
                                         <div className="flex items-center gap-2 rounded-lg border bg-background/50 p-1">
                                             <button
-                                                onClick={() => handleUpdateQuantity(product.id, product.quantity - 1)}
+                                                onClick={() => handleUpdateQuantity(product.cartItemId, product.quantity - 1)}
                                                 disabled={product.quantity <= 1}
                                                 className="flex h-7 w-7 items-center justify-center rounded-md transition hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                                                 aria-label="Decrease quantity"
@@ -130,7 +131,7 @@ export default function Cart() {
                                             </button>
                                             <span className="w-8 text-center text-sm font-semibold">{product.quantity}</span>
                                             <button
-                                                onClick={() => handleUpdateQuantity(product.id, product.quantity + 1)}
+                                                onClick={() => handleUpdateQuantity(product.cartItemId, product.quantity + 1)}
                                                 className="flex h-7 w-7 items-center justify-center rounded-md transition hover:bg-accent"
                                                 aria-label="Increase quantity"
                                             >
@@ -147,7 +148,7 @@ export default function Cart() {
 
                                 {/* Remove Button */}
                                 <button
-                                    onClick={() => handleRemoveItem(product.id, product.name)}
+                                    onClick={() => handleRemoveItem(product.cartItemId, product.name)}
                                     className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-muted-foreground backdrop-blur transition hover:bg-destructive/10 hover:text-destructive"
                                     aria-label="Remove item"
                                 >

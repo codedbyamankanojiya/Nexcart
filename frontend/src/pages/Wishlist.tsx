@@ -9,7 +9,7 @@ export default function Wishlist() {
   const wishlistIds = useCartStore((s) => s.wishlist);
   const clearWishlist = useCartStore((s) => s.clearWishlist);
 
-  const wishlistProducts = mockProducts.filter(p => wishlistIds.includes(p.id));
+  const wishlistProducts = mockProducts.filter(p => wishlistIds.includes(String(p.id)));
 
   const handleClearAll = () => {
     if (wishlistProducts.length === 0) return;

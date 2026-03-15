@@ -14,11 +14,11 @@ export default function Checkout() {
     const clearCart = useCartStore((s) => s.clearCart);
 
     const [step, setStep] = useState<Step>('address');
-    const [paymentMethod, setPaymentMethod] = useState('upi');
+    const [paymentMethod, setPaymentMethod] = useState<string>('upi');
     const [isLoading, setIsLoading] = useState(false);
 
     const cartProducts = items.map((item) => ({
-        ...mockProducts.find((p) => p.id === item.id)!,
+        ...mockProducts.find((p) => String(p.id) === item.productId)!,
         quantity: item.quantity,
     }));
 

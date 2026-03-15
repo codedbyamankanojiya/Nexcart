@@ -14,7 +14,7 @@ export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const addToCart = useCartStore((s) => s.addToCart);
+  const addToCart = useCartStore((s) => s.addProductToCart);
   const wishlist = useCartStore((s) => s.wishlist);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
 
@@ -352,7 +352,7 @@ export default function Home() {
 
                     <div className="mt-5 grid gap-3">
                       {filteredSorted.map((product) => {
-                        const isWishlisted = wishlist.includes(product.id);
+                        const isWishlisted = wishlist.includes(String(product.id));
                         return (
                           <div
                             key={product.id}
@@ -392,7 +392,7 @@ export default function Home() {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        toggleWishlist(product.id);
+                                        toggleWishlist(String(product.id));
                                         toast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
                                       }}
                                       aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
