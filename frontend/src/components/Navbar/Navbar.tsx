@@ -1,13 +1,13 @@
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, Phone, User } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { categories } from '../../data/mockProducts';
 import { categorySectionId } from '../../lib/slug';
 import { scrollToId } from '../../lib/scroll';
 import { useTheme } from '../providers/ThemeProvider';
 import { cn } from '../../lib/utils';
 import { useCatalogStore } from '../../stores/catalogStore';
-import { cartCount, useCartStore } from '../../stores/cartStore';
+import { useCartStore } from '../../stores/cartStore';
+import { useAuthStore } from '../../stores/authStore';
 
 
 export default function Navbar() {
@@ -23,8 +23,11 @@ export default function Navbar() {
   const setCurrentCategory = useCatalogStore((s) => s.setCurrentCategory);
   const searchTerm = useCatalogStore((s) => s.searchTerm);
   const setSearchTerm = useCatalogStore((s) => s.setSearchTerm);
-  const cartItems = useCartStore((s) => s.items);
-  const wishlistCount = useCartStore((s) => s.wishlist.length);
+  const cart = useCartStore((s) => s.cart);
+
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [localSearch, setLocalSearch] = useState(searchTerm);
 
@@ -41,7 +44,10 @@ export default function Navbar() {
     return () => clearTimeout(timer);
   }, [localSearch, setSearchTerm]);
 
-  const cartItemsCount = useMemo(() => cartCount(cartItems), [cartItems]);
+  const cartItemsCount = useMemo(() => cart?.itemCount ?? 0, [cart?.itemCount]);
+  const wishlistCount = 0;
+
+  const categories = useMemo(() => ['Smartphone', 'Laptop', 'Gadgets', 'PC Accessories', 'Gaming Console'], []);
 
   const closeAll = () => {
     setIsCategoryOpen(false);
@@ -265,6 +271,42 @@ export default function Navbar() {
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+
+          {isAuthenticated ? (
+            <div className="hidden items-center gap-2 md:flex">
+              <button
+                type="button"
+                onClick={() => navigate('/profile')}
+                className="pk-btn pk-btn-outline h-9 px-3 text-sm hover:bg-accent/70"
+              >
+                {user?.name || 'Account'}
+              </button>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="pk-btn pk-btn-ghost h-9 px-3 text-sm text-muted-foreground hover:bg-accent/80 hover:text-foreground"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="hidden items-center gap-2 md:flex">
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="pk-btn pk-btn-outline h-9 px-3 text-sm hover:bg-accent/70"
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/signup')}
+                className="pk-btn pk-btn-primary h-9 px-3 text-sm"
+              >
+                Sign up
+              </button>
+            </div>
+          )}
 
           {isMobileSearchOpen ? (
             <div className="absolute inset-x-0 top-0 z-50 flex h-[68px] items-center gap-3 bg-gradient-to-r from-background via-background/95 to-background px-4 shadow-lg border-b md:hidden">

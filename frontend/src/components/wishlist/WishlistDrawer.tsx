@@ -22,9 +22,9 @@ export default function WishlistDrawer({
   const wishlist = useCartStore((s) => s.wishlist);
   const removeFromWishlist = useCartStore((s) => s.removeFromWishlist);
   const clearWishlist = useCartStore((s) => s.clearWishlist);
-  const addToCart = useCartStore((s) => s.addToCart);
+  const addToCart = useCartStore((s) => s.addProductToCart);
 
-  const items = mockProducts.filter((p) => wishlist.includes(p.id));
+  const items = mockProducts.filter((p) => wishlist.includes(String(p.id)));
 
   const isCategory = (v: unknown): v is Category => {
     return typeof v === 'string' && v in categoryImages;
@@ -144,7 +144,7 @@ export default function WishlistDrawer({
                           type="button"
                           className="pk-btn pk-btn-outline h-9 w-9 text-destructive"
                           onClick={() => {
-                            removeFromWishlist(item.id);
+                            removeFromWishlist(String(item.id));
                             toast('Removed from wishlist');
                           }}
                           aria-label="Remove from wishlist"
@@ -161,7 +161,7 @@ export default function WishlistDrawer({
                           onClick={() => {
                             if (!item.inStock) return;
                             addToCart(item);
-                            removeFromWishlist(item.id);
+                            removeFromWishlist(String(item.id));
                             toast('Moved to cart');
                           }}
                         >
@@ -172,7 +172,7 @@ export default function WishlistDrawer({
                           type="button"
                           className="pk-btn pk-btn-outline h-9 px-3 text-sm"
                           onClick={() => {
-                            removeFromWishlist(item.id);
+                            removeFromWishlist(String(item.id));
                             toast('Removed from wishlist');
                           }}
                         >

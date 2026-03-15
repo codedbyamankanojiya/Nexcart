@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { formatPriceINR } from '../../lib/format';
 import { cn } from '../../lib/utils';
-import { cartTotal, useCartStore } from '../../stores/cartStore';
+import { useCartStore } from '../../stores/cartStore';
 import Sheet from '../overlays/Sheet';
 import type { SyntheticEvent } from 'react';
 import { categoryImages } from '../../data/mockProducts';
@@ -18,7 +18,7 @@ export default function CartDrawer({ open, onOpenChange }: { open: boolean; onOp
   const setQty = useCartStore((s) => s.setQty);
   const clearCart = useCartStore((s) => s.clearCart);
 
-  const subtotal = cartTotal(items);
+  const subtotal = useCartStore((s) => s.total);
   const shipping = subtotal > 999 ? 0 : subtotal > 0 ? 49 : 0;
   const tax = subtotal > 0 ? Math.round(subtotal * 0.18) : 0;
   const total = subtotal + shipping + tax;
@@ -105,19 +105,19 @@ export default function CartDrawer({ open, onOpenChange }: { open: boolean; onOp
                   <div className="flex gap-3">
                     <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-muted">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product.images[0]}
+                        alt={item.product.name}
                         className="h-full w-full object-cover"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => handleImgError(e, item.category)}
+                        onError={(e) => handleImgError(e, item.product.category?.name)}
                       />
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="line-clamp-2 text-sm font-semibold">{item.name}</div>
+                          <div className="line-clamp-2 text-sm font-semibold">{item.product.name}</div>
                           <div className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary">
                             {formatPriceINR(item.price)}
                           </div>

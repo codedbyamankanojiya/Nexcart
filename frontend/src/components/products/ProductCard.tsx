@@ -9,13 +9,13 @@ import type { Product } from '../../types/product';
 import { categoryImages } from '../../data/mockProducts';
 
 function ProductCard({ product }: { product: Product }) {
-  const addToCart = useCartStore((s) => s.addToCart);
+  const addToCart = useCartStore((s) => s.addProductToCart);
   const wishlist = useCartStore((s) => s.wishlist);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
 
   const [isImgLoaded, setIsImgLoaded] = useState(false);
 
-  const isWishlisted = wishlist.includes(product.id);
+  const isWishlisted = wishlist.includes(String(product.id));
 
   const badge = (() => {
     if (!product.inStock) return { text: 'Out of Stock', className: 'bg-destructive/90 text-destructive-foreground shadow-lg' };
@@ -99,7 +99,7 @@ function ProductCard({ product }: { product: Product }) {
       <button
         type="button"
         onClick={() => {
-          toggleWishlist(product.id);
+          toggleWishlist(String(product.id));
           toast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
         }}
         aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
