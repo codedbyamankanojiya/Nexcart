@@ -21,17 +21,6 @@ router.get('/profile', authenticateToken, async (req: AuthRequest, res) => {
             }
           }
         }
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        avatar: true,
-        role: true,
-        createdAt: true,
-        customerProfile: true,
-        sellerProfile: true,
       }
     });
 
@@ -230,7 +219,7 @@ router.get('/seller/analytics', authenticateToken, requireSeller, async (req: Au
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { order: { createdAt: 'desc' } },
         take: 10,
       }),
       prisma.product.findMany({
@@ -294,17 +283,6 @@ router.get('/admin/users', authenticateToken, requireAdmin, async (req: AuthRequ
               orders: true,
             }
           }
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          phone: true,
-          role: true,
-          createdAt: true,
-          customerProfile: true,
-          sellerProfile: true,
-          _count: true,
         },
         orderBy: { createdAt: 'desc' },
         skip,

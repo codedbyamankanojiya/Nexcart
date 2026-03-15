@@ -70,7 +70,7 @@ router.post('/signup', async (req, res) => {
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as jwt.SignOptions['expiresIn'] }
     );
 
     res.status(201).json({
@@ -106,7 +106,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as jwt.SignOptions['expiresIn'] }
     );
 
     const { password, ...userWithoutPassword } = user;
@@ -130,17 +130,6 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
     const user = await prisma.user.findUnique({
       where: { id: req.user!.id },
       include: {
-        customerProfile: true,
-        sellerProfile: true,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        avatar: true,
-        role: true,
-        createdAt: true,
         customerProfile: true,
         sellerProfile: true,
       }

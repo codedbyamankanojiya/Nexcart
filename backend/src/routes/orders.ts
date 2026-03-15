@@ -179,7 +179,7 @@ router.post('/:id/confirm-mock-payment', authenticateToken, async (req: AuthRequ
       return res.status(400).json({ error: 'Payment session not found' });
     }
 
-    await prisma.$transaction(async (trx: PrismaClient) => {
+    await prisma.$transaction(async (trx: Prisma.TransactionClient) => {
       // re-check inventory before confirming
       for (const item of order.items) {
         if (item.product.trackQuantity && item.product.quantity < item.quantity) {

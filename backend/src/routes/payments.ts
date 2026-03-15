@@ -1,16 +1,22 @@
 import { Router } from 'express';
 import Razorpay from 'razorpay';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { AuthRequest, authenticateToken } from '../middleware/auth';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+const isRazorpayEnabled = Boolean(razorpayKeyId && razorpayKeySecret);
+
+const razorpay = isRazorpayEnabled
+  ? new Razorpay({
+      key_id: razorpayKeyId!,
+      key_secret: razorpayKeySecret!,
+    })
+  : null;
 
 const createPaymentSchema = z.object({
   orderId: z.string(),
@@ -19,6 +25,12 @@ const createPaymentSchema = z.object({
 
 router.post('/create-order', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    if (!isRazorpayEnabled || !razorpay) {
+      return res.status(400).json({
+        error: 'Razorpay is not configured. Use mock payments via POST /api/orders then POST /api/orders/:id/confirm-mock-payment.',
+      });
+    }
+
     const validatedData = createPaymentSchema.parse(req.body);
 
     const order = await prisma.order.findUnique({
@@ -37,6 +49,10 @@ router.post('/create-order', authenticateToken, async (req: AuthRequest, res) =>
       return res.status(400).json({ error: 'Order already paid or payment processing' });
     }
 
+    if (Math.round(validatedData.amount * 100) !== Math.round(order.total * 100)) {
+      return res.status(400).json({ error: 'Amount mismatch' });
+    }
+
     const razorpayOrder = await razorpay.orders.create({
       amount: Math.round(order.total * 100),
       currency: order.currency,
@@ -44,6 +60,13 @@ router.post('/create-order', authenticateToken, async (req: AuthRequest, res) =>
       notes: {
         orderId: order.id,
         userId: req.user!.id,
+      },
+    });
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentId: razorpayOrder.id,
       },
     });
 
@@ -55,13 +78,13 @@ router.post('/create-order', authenticateToken, async (req: AuthRequest, res) =>
         currency: order.currency,
         status: 'PENDING',
         gateway: 'razorpay',
-        gatewayResponse: razorpayOrder,
+        gatewayResponse: razorpayOrder as any,
       },
     });
 
     res.json({
       razorpayOrder,
-      key: process.env.RAZORPAY_KEY_ID,
+      key: razorpayKeyId,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -74,17 +97,31 @@ router.post('/create-order', authenticateToken, async (req: AuthRequest, res) =>
 
 const verifyPaymentSchema = z.object({
   orderId: z.string(),
-  paymentId: z.string(),
-  signature: z.string(),
+  razorpayOrderId: z.string(),
+  razorpayPaymentId: z.string(),
+  razorpaySignature: z.string(),
 });
 
 router.post('/verify', authenticateToken, async (req: AuthRequest, res) => {
   try {
+    if (!isRazorpayEnabled || !razorpay) {
+      return res.status(400).json({
+        error: 'Razorpay is not configured. Use mock payments via POST /api/orders then POST /api/orders/:id/confirm-mock-payment.',
+      });
+    }
+
     const validatedData = verifyPaymentSchema.parse(req.body);
 
     const order = await prisma.order.findUnique({
       where: { id: validatedData.orderId },
-      include: { transactions: true },
+      include: {
+        transactions: true,
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -95,40 +132,68 @@ router.post('/verify', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(403).json({ error: 'Not authorized to verify this payment' });
     }
 
+    if (order.paymentId && order.paymentId !== validatedData.razorpayOrderId) {
+      return res.status(400).json({ error: 'Razorpay order mismatch' });
+    }
+
     const crypto = require('crypto');
     const generatedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
-      .update(`${validatedData.paymentId}|${order.orderNumber}`)
+      .createHmac('sha256', razorpayKeySecret!)
+      .update(`${validatedData.razorpayOrderId}|${validatedData.razorpayPaymentId}`)
       .digest('hex');
 
-    if (generatedSignature !== validatedData.signature) {
+    if (generatedSignature !== validatedData.razorpaySignature) {
       return res.status(400).json({ error: 'Invalid payment signature' });
     }
 
     try {
-      const payment = await razorpay.payments.fetch(validatedData.paymentId);
+      const payment = await razorpay.payments.fetch(validatedData.razorpayPaymentId);
 
       if (payment.status !== 'captured') {
         return res.status(400).json({ error: 'Payment not successful' });
       }
 
-      await prisma.$transaction([
-        prisma.order.update({
+      await prisma.$transaction(async (trx: Prisma.TransactionClient) => {
+        // re-check inventory before confirming
+        for (const item of order.items) {
+          if (item.product.trackQuantity && item.product.quantity < item.quantity) {
+            throw new Error(`Insufficient stock for product ${item.product.name}`);
+          }
+        }
+
+        await trx.order.update({
           where: { id: order.id },
           data: {
             paymentStatus: 'PAID',
             status: 'CONFIRMED',
           },
-        }),
-        prisma.paymentTransaction.updateMany({
+        });
+
+        await trx.paymentTransaction.updateMany({
           where: { orderId: order.id },
           data: {
-            paymentId: validatedData.paymentId,
+            paymentId: validatedData.razorpayPaymentId,
             status: 'SUCCESS',
-            gatewayResponse: payment,
+            gatewayResponse: payment as any,
           },
-        }),
-      ]);
+        });
+
+        for (const item of order.items) {
+          if (item.product.trackQuantity) {
+            await trx.product.update({
+              where: { id: item.productId },
+              data: {
+                quantity: { decrement: item.quantity },
+              },
+            });
+          }
+        }
+
+        const cart = await trx.cart.findUnique({ where: { userId: req.user!.id } });
+        if (cart) {
+          await trx.cartItem.deleteMany({ where: { cartId: cart.id } });
+        }
+      });
 
       res.json({
         message: 'Payment verified successfully',
@@ -141,7 +206,8 @@ router.post('/verify', authenticateToken, async (req: AuthRequest, res) => {
       });
     } catch (razorpayError) {
       console.error('Razorpay verification error:', razorpayError);
-      res.status(400).json({ error: 'Payment verification failed' });
+      const msg = typeof (razorpayError as any)?.message === 'string' ? (razorpayError as any).message : 'Payment verification failed';
+      res.status(400).json({ error: msg });
     }
   } catch (error) {
     if (error instanceof z.ZodError) {

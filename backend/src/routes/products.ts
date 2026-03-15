@@ -23,7 +23,7 @@ const productSchema = z.object({
   categoryId: z.string(),
   variants: z.array(z.object({
     title: z.string(),
-    options: z.any(),
+    options: z.record(z.string()),
     price: z.number().positive(),
     sku: z.string(),
     quantity: z.number().int().min(0).default(0),
@@ -180,11 +180,16 @@ router.post('/', authenticateToken, requireSeller, async (req: AuthRequest, res)
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
+    const { variants, ...productData } = validatedData;
+
     const product = await prisma.product.create({
       data: {
-        ...validatedData,
+        ...productData,
         slug,
         sellerId: sellerProfile.id,
+        variants: variants ? {
+          create: variants
+        } : undefined,
       },
       include: {
         category: true,
@@ -223,9 +228,13 @@ router.put('/:id', authenticateToken, requireSeller, async (req: AuthRequest, re
       return res.status(403).json({ error: 'Not authorized to update this product' });
     }
 
+    const updateData = Object.fromEntries(
+      Object.entries(validatedData).filter(([_, v]) => v !== undefined)
+    );
+
     const updatedProduct = await prisma.product.update({
       where: { id: req.params.id },
-      data: validatedData,
+      data: updateData,
       include: {
         category: true,
         variants: true,
