@@ -1,7 +1,8 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { useEffect } from 'react';
 import { useAuthStore } from './stores/authStore';
+import type React from 'react';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -12,6 +13,16 @@ import Wishlist from './pages/Wishlist';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 
+function RequireAuth({ children }: { children: React.ReactElement }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -21,8 +32,8 @@ const router = createBrowserRouter([
       { path: 'product/:id', element: <ProductDetails /> },
       { path: 'wishlist', element: <Wishlist /> },
       { path: 'cart', element: <Cart /> },
-      { path: 'checkout', element: <Checkout /> },
-      { path: 'orders', element: <Orders /> },
+      { path: 'checkout', element: <RequireAuth><Checkout /></RequireAuth> },
+      { path: 'orders', element: <RequireAuth><Orders /></RequireAuth> },
     ],
   },
   {

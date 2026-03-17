@@ -11,7 +11,6 @@ type Step = 'address' | 'payment' | 'review';
 export default function Checkout() {
     const navigate = useNavigate();
     const items = useCartStore((s) => s.items);
-    const clearCart = useCartStore((s) => s.clearCart);
 
     const [step, setStep] = useState<Step>('address');
     const [paymentMethod, setPaymentMethod] = useState<string>('upi');
@@ -26,14 +25,13 @@ export default function Checkout() {
     const tax = subtotal * 0.18;
     const total = subtotal + tax;
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
         setIsLoading(true);
-        setTimeout(() => {
-            clearCart();
+        try {
+            toast.error('Order cannot be placed without payment confirmation. Complete payment to confirm the order.');
+        } finally {
             setIsLoading(false);
-            toast.success('Order placed successfully!');
-            navigate('/orders'); // Assuming orders page exists, or back to home
-        }, 2000);
+        }
     };
 
     const steps = [
