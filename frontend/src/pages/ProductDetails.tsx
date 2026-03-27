@@ -7,6 +7,8 @@ import { getProductDetails } from '../data/mockProductDetails';
 import { formatPriceINR } from '../lib/format';
 import { cn } from '../lib/utils';
 import { useCartStore } from '../stores/cartStore';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '../lib/products';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -17,18 +19,52 @@ export default function ProductDetails() {
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
 
   const productId = Number(id);
-  const product = useMemo(() => mockProducts.find((p) => p.id === productId) ?? null, [productId]);
+  const mockProduct = useMemo(() => {
+    const p = mockProducts.find((p) => p.id === productId || String(p.id) === id);
+    if (!p) return null;
+    return {
+      ...p,
+      quantity: p.inStock ? 100 : 0,
+      averageRating: p.rating,
+      reviewCount: p.reviews,
+      images: [p.image],
+      category: { id: p.category, name: p.category }
+    };
+  }, [id, productId]);
+
+  const { data: qData, isLoading } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => id ? productsAPI.getProduct(id) : null,
+    enabled: !!id,
+    retry: false
+  });
+
+  const product = (qData?.product || qData || mockProduct) as any;
 
   const details = useMemo(() => (product ? getProductDetails(product) : null), [product]);
 
-  const images = details?.images?.length ? details.images : product ? [product.image] : [];
+  const images = product?.images?.length ? product.images : product ? [product.image] : [];
 
-  const relatedProducts = useMemo(() => {
-    if (!product) return [] as typeof mockProducts;
-    return mockProducts
-      .filter((p) => p.category === product.category && p.id !== product.id)
-      .slice(0, 6);
-  }, [product?.category, product?.id]);
+  const { data: relatedData } = useQuery({
+    queryKey: ['products', 'related', product?.category?.id || product?.category?.name || product?.categoryId],
+    queryFn: () => productsAPI.getProducts({ category: product?.categoryId || product?.category?.id, limit: 10 }),
+    enabled: !!(product?.categoryId || product?.category?.id)
+  });
+
+  const mappedRelatedMocks = useMemo(() => mockProducts
+    .filter(p => p.category === (product?.category?.name || product?.category) && String(p.id) !== String(product?.id))
+    .slice(0, 6)
+    .map(p => ({
+      ...p,
+      quantity: p.inStock ? 100 : 0,
+      averageRating: p.rating,
+      reviewCount: p.reviews,
+      images: [p.image],
+      category: { id: p.category, name: p.category }
+    })), [product]);
+
+  const apiRelated = relatedData?.products?.filter((p: any) => String(p.id) !== String(product?.id)) || [];
+  const relatedProducts = [...apiRelated, ...mappedRelatedMocks].slice(0, 6);
 
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [isImgLoaded, setIsImgLoaded] = useState(false);
@@ -38,7 +74,7 @@ export default function ProductDetails() {
   const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
     const fallbacks = [
-      product?.category ? categoryImages[product.category] : undefined,
+      product?.category ? (categoryImages as any)[product.category?.name || product.category?.id || (typeof product.category === 'string' ? product.category : '')] : undefined,
       'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
       'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image',
     ].filter(Boolean) as string[];
@@ -113,7 +149,7 @@ export default function ProductDetails() {
         <section className="pk-section overflow-hidden p-4">
           <div className="grid gap-4 lg:grid-cols-[84px_1fr]">
             <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:flex-col lg:overflow-visible">
-              {images.map((src, idx) => (
+              {images.map((src: string, idx: number) => (
                 <button
                   key={`${product.id}-thumb-${idx}`}
                   type="button"
@@ -368,7 +404,7 @@ export default function ProductDetails() {
           <p className="mt-1 text-sm text-muted-foreground">Related items in {product.category}.</p>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {relatedProducts.map((p) => (
+            {relatedProducts.map((p: any) => (
               <Link
                 key={p.id}
                 to={`/product/${p.id}`}
@@ -376,12 +412,12 @@ export default function ProductDetails() {
               >
                 <div className="flex gap-3">
                   <div className="h-16 w-20 overflow-hidden rounded-xl bg-muted">
-                    <img src={p.image} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.06]" />
+                    <img src={p.images?.[0] || p.image} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.06]" />
                   </div>
                   <div className="min-w-0">
                     <div className="line-clamp-2 text-sm font-semibold">{p.name}</div>
                     <div className="mt-1 text-sm font-semibold text-primary">{formatPriceINR(p.price)}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">⭐ {p.rating.toFixed(1)} · {p.reviews}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">⭐ {(p.averageRating || 0).toFixed(1)} · {p.reviewCount || 0}</div>
                   </div>
                 </div>
               </Link>

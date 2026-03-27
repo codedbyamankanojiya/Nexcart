@@ -12,6 +12,9 @@ import ProductDetails from './pages/ProductDetails';
 import Wishlist from './pages/Wishlist';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import SellerDashboard from './pages/seller/SellerDashboard';
+import SellerProducts from './pages/seller/SellerProducts';
+import ProductForm from './pages/seller/ProductForm';
 
 function RequireAuth({ children }: { children: React.ReactElement }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -20,6 +23,13 @@ function RequireAuth({ children }: { children: React.ReactElement }) {
     return <Navigate to="/login" replace />;
   }
 
+  return children;
+}
+
+function RequireSeller({ children }: { children: React.ReactElement }) {
+  const { isAuthenticated, user } = useAuthStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== 'SELLER') return <Navigate to="/" replace />;
   return children;
 }
 
@@ -34,6 +44,10 @@ const router = createBrowserRouter([
       { path: 'cart', element: <Cart /> },
       { path: 'checkout', element: <RequireAuth><Checkout /></RequireAuth> },
       { path: 'orders', element: <RequireAuth><Orders /></RequireAuth> },
+      { path: 'seller/dashboard', element: <RequireSeller><SellerDashboard /></RequireSeller> },
+      { path: 'seller/products', element: <RequireSeller><SellerProducts /></RequireSeller> },
+      { path: 'seller/products/new', element: <RequireSeller><ProductForm /></RequireSeller> },
+      { path: 'seller/products/edit/:id', element: <RequireSeller><ProductForm /></RequireSeller> },
     ],
   },
   {

@@ -8,7 +8,7 @@ import { useCartStore } from '../../stores/cartStore';
 import type { Product } from '../../types/product';
 import { categoryImages } from '../../data/mockProducts';
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product }: { product: any }) {
   const addToCart = useCartStore((s) => s.addProductToCart);
   const wishlist = useCartStore((s) => s.wishlist);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
@@ -18,10 +18,10 @@ function ProductCard({ product }: { product: Product }) {
   const isWishlisted = wishlist.includes(String(product.id));
 
   const badge = (() => {
-    if (!product.inStock) return { text: 'Out of Stock', className: 'bg-destructive/90 text-destructive-foreground shadow-lg' };
-    if (product.rating >= 4.8 && product.reviews >= 500)
+    if (product.quantity === 0) return { text: 'Out of Stock', className: 'bg-destructive/90 text-destructive-foreground shadow-lg' };
+    if ((product.averageRating || 0) >= 4.8 && (product.reviewCount || 0) >= 500)
       return { text: 'Best Seller', className: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg' };
-    if (product.rating >= 4.7 && product.reviews >= 100)
+    if ((product.averageRating || 0) >= 4.7 && (product.reviewCount || 0) >= 100)
       return { text: 'New', className: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg' };
     return null;
   })();
@@ -29,7 +29,7 @@ function ProductCard({ product }: { product: Product }) {
   const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
     const fallbacks = [
-      categoryImages[product.category],
+      categoryImages[product.category?.name || typeof product.category === 'string' ? product.category : ''],
       'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
       'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image',
     ];
@@ -56,7 +56,8 @@ function ProductCard({ product }: { product: Product }) {
     }
   };
 
-  const srcSet = `${withWidth(product.image, 400)} 400w, ${withWidth(product.image, 800)} 800w, ${withWidth(product.image, 1200)} 1200w`;
+  const imgUrl = product.images?.[0] || product.image || '';
+  const srcSet = imgUrl ? `${withWidth(imgUrl, 400)} 400w, ${withWidth(imgUrl, 800)} 800w, ${withWidth(imgUrl, 1200)} 1200w` : '';
   const sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
 
   return (
@@ -80,7 +81,7 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         <img
-          src={product.image}
+          src={imgUrl}
           srcSet={srcSet}
           sizes={sizes}
           alt={product.name}
@@ -121,7 +122,7 @@ function ProductCard({ product }: { product: Product }) {
             >
               {product.name}
             </Link>
-            <div className="mt-1 text-xs font-semibold text-foreground/70 sm:mt-2 sm:text-sm">{product.category}</div>
+            <div className="mt-1 text-xs font-semibold text-foreground/70 sm:mt-2 sm:text-sm">{product.category?.name || product.category || 'Uncategorized'}</div>
           </div>
           <div className="shrink-0 rounded-lg bg-gradient-to-br from-primary/30 to-primary/20 px-2 py-1 text-sm font-extrabold text-primary shadow-md sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-lg">
             {formatPriceINR(product.price)}
@@ -131,25 +132,25 @@ function ProductCard({ product }: { product: Product }) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="inline-flex items-center gap-1 rounded-full bg-muted/80 px-2 py-1 text-[10px] font-medium text-muted-foreground shadow-sm sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:text-xs">
             <Star className="h-3 w-3 fill-amber-400 text-amber-400 sm:h-3.5 sm:w-3.5" />
-            <span className="font-bold text-foreground">{product.rating.toFixed(1)}</span>
-            <span className="text-muted-foreground">({product.reviews})</span>
+            <span className="font-bold text-foreground">{(product.averageRating || 0).toFixed(1)}</span>
+            <span className="text-muted-foreground">({product.reviewCount || 0})</span>
           </div>
-          {!product.inStock && (
+          {product.quantity === 0 && (
             <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] font-bold text-destructive sm:px-2.5 sm:py-1 sm:text-xs">Out of stock</span>
           )}
         </div>
 
         <button
           type="button"
-          disabled={!product.inStock}
+          disabled={product.quantity === 0}
           onClick={() => {
-            if (!product.inStock) return;
+            if (product.quantity === 0) return;
             addToCart(product);
             toast.success('Added to cart');
           }}
           className={cn(
             'pk-btn pk-btn-primary pk-btn-shine h-9 w-full px-0 text-xs font-semibold shadow-lg transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:h-11 sm:px-4 sm:text-sm',
-            product.inStock && 'hover:shadow-xl hover:shadow-primary/30'
+            product.quantity > 0 && 'hover:shadow-xl hover:shadow-primary/30'
           )}
         >
           <ShoppingCart className="h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />

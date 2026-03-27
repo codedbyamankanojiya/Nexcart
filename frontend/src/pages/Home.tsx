@@ -9,6 +9,8 @@ import { scrollToId } from '../lib/scroll';
 import ProductCard from '../components/products/ProductCard';
 import { type SortBy, useCatalogStore } from '../stores/catalogStore';
 import { useCartStore } from '../stores/cartStore';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '../lib/products';
 
 export default function Home() {
   const location = useLocation();
@@ -25,7 +27,21 @@ export default function Home() {
   const sortBy = useCatalogStore((s) => s.sortBy);
   const setSortBy = useCatalogStore((s) => s.setSortBy);
 
-  const products = mockProducts;
+  const { data, isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => productsAPI.getProducts({ limit: 100 }),
+  });
+
+  const mappedMockProducts = useMemo(() => mockProducts.map(p => ({
+    ...p,
+    quantity: p.inStock ? 100 : 0,
+    averageRating: p.rating,
+    reviewCount: p.reviews,
+    images: [p.image],
+    category: { id: p.category, name: p.category }
+  })), []);
+
+  const products = [...(data?.products || []), ...mappedMockProducts] as any[];
 
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;
@@ -82,7 +98,7 @@ export default function Home() {
         case 'price-high':
           return b.price - a.price;
         case 'rating':
-          return b.rating - a.rating;
+          return (b.averageRating || 0) - (a.averageRating || 0);
         case 'name':
           return a.name.localeCompare(b.name);
         case 'relevance':
@@ -97,8 +113,9 @@ export default function Home() {
   const categorizedProducts = useMemo(() => {
     const map: Record<string, typeof filteredSorted> = {};
     for (const p of filteredSorted) {
-      if (!map[p.category]) map[p.category] = [];
-      map[p.category].push(p);
+      const catName = p.category?.name || 'Uncategorized';
+      if (!map[catName]) map[catName] = [];
+      map[catName].push(p);
     }
     return map;
   }, [filteredSorted]);
@@ -119,8 +136,8 @@ export default function Home() {
 
   const featuredProducts = useMemo(() => {
     return [...products]
-      .filter((p) => p.inStock)
-      .sort((a, b) => b.rating + b.reviews / 1000 - (a.rating + a.reviews / 1000))
+      .filter((p) => p.quantity > 0)
+      .sort((a, b) => (b.averageRating || 0) + (b.reviewCount || 0) / 1000 - ((a.averageRating || 0) + (a.reviewCount || 0) / 1000))
       .slice(0, 6);
   }, [products]);
 
@@ -368,7 +385,7 @@ export default function Home() {
                                     decoding="async"
                                     onError={(e) => {
                                       e.currentTarget.src =
-                                        categoryImages[product.category] ??
+                                        (categoryImages as any)[product.category?.name || ''] ??
                                         'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image';
                                     }}
                                     className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
@@ -386,7 +403,7 @@ export default function Home() {
                                       >
                                         {product.name}
                                       </Link>
-                                      <div className="mt-1 text-xs text-muted-foreground">{product.category}</div>
+                                      <div className="mt-1 text-xs text-muted-foreground">{product.category?.name}</div>
                                     </div>
 
                                     <button
@@ -408,10 +425,10 @@ export default function Home() {
                                   <div className="mt-3 flex flex-wrap items-center gap-2">
                                     <div className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">
                                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                      <span className="font-semibold text-foreground">{product.rating.toFixed(1)}</span>
-                                      <span>({product.reviews})</span>
+                                      <span className="font-semibold text-foreground">{(product.averageRating || 0).toFixed(1)}</span>
+                                      <span>({product.reviewCount || 0})</span>
                                     </div>
-                                    {!product.inStock && (
+                                    {product.quantity === 0 && (
                                       <span className="rounded-full bg-destructive/10 px-2 py-1 text-xs font-semibold text-destructive">
                                         Out of stock
                                       </span>
@@ -423,9 +440,9 @@ export default function Home() {
                                   <div className="text-base font-semibold text-primary">{formatPriceINR(product.price)}</div>
                                   <button
                                     type="button"
-                                    disabled={!product.inStock}
+                                    disabled={product.quantity === 0}
                                     onClick={() => {
-                                      if (!product.inStock) return;
+                                      if (product.quantity === 0) return;
                                       addToCart(product);
                                       toast('Added to cart');
                                     }}
