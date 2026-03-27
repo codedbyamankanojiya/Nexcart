@@ -274,6 +274,15 @@ export default function Navbar() {
 
           {isAuthenticated ? (
             <div className="hidden items-center gap-2 md:flex">
+              {user?.role === 'SELLER' && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/seller/dashboard')}
+                  className="pk-btn pk-btn-primary pk-btn-shine h-9 px-3 text-sm"
+                >
+                  Seller Dashboard
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => navigate('/profile')}
@@ -473,6 +482,22 @@ export default function Navbar() {
                       </div>
                       <span className="text-sm font-medium">Contact</span>
                     </button>
+
+                    {user?.role === 'SELLER' && (
+                      <button
+                        type="button"
+                        className="group flex h-14 w-full items-center gap-4 rounded-xl bg-primary/10 px-4 text-left transition-all duration-200 hover:bg-primary/20 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-primary/20"
+                        onClick={() => {
+                          navigate('/seller/dashboard');
+                          closeAll();
+                        }}
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-emerald-500 shadow-sm text-white">
+                          <Package className="h-4.5 w-4.5" />
+                        </div>
+                        <span className="text-sm font-medium text-primary">Seller Dashboard</span>
+                      </button>
+                    )}
                   </nav>
                 </div>
 
