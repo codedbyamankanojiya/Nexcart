@@ -1,17 +1,28 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { v2 as cloudinary } from 'cloudinary';
+import path from 'path';
+import fs from 'fs';
 import { AuthRequest, authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../../public/uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
 });
 
-const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
@@ -33,26 +44,11 @@ router.post('/image', authenticateToken, upload.single('image'), async (req: Aut
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'image',
-          folder: 'popkart',
-          transformation: [
-            { width: 800, height: 600, crop: 'limit' },
-            { quality: 'auto' },
-          ],
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(req.file!.buffer);
-    });
+    const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
     res.json({
-      url: (result as any).secure_url,
-      publicId: (result as any).public_id,
+      url,
+      publicId: req.file.filename,
     });
   } catch (error) {
     console.error('Upload error:', error);
@@ -66,30 +62,9 @@ router.post('/images', authenticateToken, upload.array('images', 5), async (req:
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const uploadPromises = (req.files as Express.Multer.File[]).map(file =>
-      new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            resource_type: 'image',
-            folder: 'popkart',
-            transformation: [
-              { width: 800, height: 600, crop: 'limit' },
-              { quality: 'auto' },
-            ],
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        ).end(file.buffer);
-      })
-    );
-
-    const results = await Promise.all(uploadPromises);
-
-    const images = results.map((result: any) => ({
-      url: result.secure_url,
-      publicId: result.public_id,
+    const images = (req.files as Express.Multer.File[]).map((file) => ({
+      url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`,
+      publicId: file.filename,
     }));
 
     res.json({ images });
@@ -102,8 +77,11 @@ router.post('/images', authenticateToken, upload.array('images', 5), async (req:
 router.delete('/image/:publicId', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { publicId } = req.params;
+    const filePath = path.join(uploadDir, publicId);
 
-    await cloudinary.uploader.destroy(publicId);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
 
     res.json({ message: 'Image deleted successfully' });
   } catch (error) {
