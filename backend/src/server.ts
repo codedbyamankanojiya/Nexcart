@@ -29,7 +29,13 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || /^http:\/\/localhost:(5173|5174)$/.test(origin) || origin === process.env.FRONTEND_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(limiter);
