@@ -2,15 +2,15 @@ import type { Category, Product } from '../types/product';
 
 export const categoryImages: Record<Category, string> = {
   Smartphone:
-    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=2080&q=80',
+    'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=2080&q=80',
   'Gaming PC Gears':
-    'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=2042&q=80',
+    'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=2042&q=80',
   Laptop:
-    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=2071&q=80',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=2071&q=80',
   "Men's Fashion":
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=2070&q=80',
   "Women's Fashion":
-    'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=2088&q=80',
+    'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=2088&q=80',
   'Gaming Console':
     'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=2070&q=80',
   Television:
@@ -18,9 +18,9 @@ export const categoryImages: Record<Category, string> = {
   'PC Accessories':
     'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=2067&q=80',
   Gadgets:
-    'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?auto=format&fit=crop&w=2021&q=80',
+    'https://images.unsplash.com/photo-1543512214-318c7553f230?auto=format&fit=crop&w=2021&q=80',
   Glasses:
-    'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=2080&q=80',
+    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=2080&q=80',
 };
 
 export const categories = Object.keys(categoryImages) as Category[];
@@ -45,7 +45,7 @@ const baseProducts: Product[] = [
     price: 124999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1610945264803-c22b62d2a7b3?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=1000&q=80',
     description: '6.8-inch Dynamic AMOLED display, S Pen included, 200MP camera, AI features.',
     rating: 4.7,
     reviews: 1834,
@@ -69,7 +69,7 @@ const baseProducts: Product[] = [
     price: 39999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=1000&q=80',
     description: '120Hz AMOLED, Snapdragon performance, fast charging, clean feel for daily power users.',
     rating: 4.5,
     reviews: 892,
@@ -81,7 +81,7 @@ const baseProducts: Product[] = [
     price: 44999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1674763973792-761fc5e3b0d7?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1617802808078-0b7fc4c5e20c?auto=format&fit=crop&w=1000&q=80',
     description: 'Signature Glyph design, smooth OLED, premium build, clean UI with great battery life.',
     rating: 4.4,
     reviews: 640,
@@ -93,7 +93,7 @@ const baseProducts: Product[] = [
     price: 99999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1623998022290-a74f8cc36563?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=1000&q=80',
     description: 'Pro camera system, bright LTPO display, flagship performance for creators and gamers.',
     rating: 4.6,
     reviews: 418,
@@ -117,7 +117,7 @@ const baseProducts: Product[] = [
     price: 154999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1585060544812-6b45742d762f?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1512499617640-c2f999098c01?auto=format&fit=crop&w=1000&q=80',
     description: 'Foldable design, big display, multitasking powerhouse, premium build.',
     rating: 4.5,
     reviews: 678,
@@ -129,7 +129,7 @@ const baseProducts: Product[] = [
     price: 40999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1000&q=80',
     description: 'Fast performance, smooth AMOLED, reliable camera for daily use, quick charging.',
     rating: 4.5,
     reviews: 734,
@@ -239,7 +239,7 @@ const baseProducts: Product[] = [
     price: 89999.99,
     category: 'Laptop',
     image:
-      'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=1000&q=80',
     description: '15.6-inch 144Hz, RTX 4060, Ryzen 7, 16GB RAM, 512GB SSD',
     rating: 4.7,
     reviews: 567,
@@ -251,7 +251,7 @@ const baseProducts: Product[] = [
     price: 74999.99,
     category: 'Laptop',
     image:
-      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&w=1000&q=80',
     description: 'Compact OLED laptop for study and work: sharp visuals, solid battery, comfortable keyboard.',
     rating: 4.4,
     reviews: 412,
@@ -287,7 +287,7 @@ const baseProducts: Product[] = [
     price: 134900.0,
     category: 'Laptop',
     image:
-      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1609429019995-8c40f49535a5?auto=format&fit=crop&w=1000&q=80',
     description: 'Thin and light laptop with excellent battery life and smooth performance for everyday work.',
     rating: 4.8,
     reviews: 567,
@@ -360,7 +360,7 @@ const baseProducts: Product[] = [
     price: 2499.99,
     category: "Men's Fashion",
     image:
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80',
     description: 'Comfortable cotton-blend hoodie with Puma Cat logo, kangaroo pocket, ribbed cuffs.',
     rating: 4.6,
     reviews: 1234,
@@ -372,7 +372,7 @@ const baseProducts: Product[] = [
     price: 5999.99,
     category: "Men's Fashion",
     image:
-      'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1000&q=80',
     description: 'Retro-inspired sneakers with soft leather upper, EVA midsole, timeless design.',
     rating: 4.4,
     reviews: 756,
@@ -384,7 +384,7 @@ const baseProducts: Product[] = [
     price: 3999.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=1000&q=80',
     description: 'Elegant floral midi dress with V-neckline, flowing silhouette, perfect for occasions.',
     rating: 4.6,
     reviews: 1245,
@@ -396,7 +396,7 @@ const baseProducts: Product[] = [
     price: 2999.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1585653757176-b06730171fd0?auto=format&fit=crop&w=1000&q=80',
     description: 'Traditional cotton kurta with palazzo pants, ethnic prints, comfortable festive wear.',
     rating: 4.7,
     reviews: 892,
@@ -408,7 +408,7 @@ const baseProducts: Product[] = [
     price: 18999.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=80',
     description: 'Luxury leather tote with signature MK logo, spacious interior, gold-tone hardware.',
     rating: 4.8,
     reviews: 567,
@@ -420,7 +420,7 @@ const baseProducts: Product[] = [
     price: 4999.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=1000&q=80',
     description: 'Elegant crystal earrings with rhodium plating, brilliant sparkle, timeless design.',
     rating: 4.9,
     reviews: 1876,
@@ -432,7 +432,7 @@ const baseProducts: Product[] = [
     price: 1499.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=1000&q=80',
     description: 'Sustainable fashion top made from organic cotton, modern fit, eco-friendly.',
     rating: 4.4,
     reviews: 623,
@@ -444,7 +444,7 @@ const baseProducts: Product[] = [
     price: 2999.99,
     category: "Women's Fashion",
     image:
-      'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80',
     description: 'Glamorous sequin dress perfect for parties, bodycon fit, eye-catching shimmer.',
     rating: 4.5,
     reviews: 445,
@@ -641,7 +641,7 @@ const baseProducts: Product[] = [
     price: 14999.99,
     category: 'Glasses',
     image:
-      'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=1000&q=80',
     description: 'Sport-inspired design with Prizm polarized lenses, durable O Matter frame.',
     rating: 4.7,
     reviews: 2134,
@@ -703,14 +703,14 @@ const categoryImagePool: Record<Category, string[]> = {
     'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
   ],
   Laptop: [
-    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1484788984921-03950022c9ef?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1609429019995-8c40f49535a5?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=1200&q=80',
   ],
   "Men's Fashion": [
     'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1200&q=80',
@@ -718,19 +718,19 @@ const categoryImagePool: Record<Category, string[]> = {
     'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1520975958225-9d2cce5501bd?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1520975693411-bf58780d45ea?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=1200&q=80',
   ],
   "Women's Fashion": [
-    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1520975682031-ae40b4f4f1ab?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1520975745909-91e88f10f1bd?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1585653757176-b06730171fd0?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1591343395082-e120087004b4?auto=format&fit=crop&w=1200&q=80',
   ],
   'Gaming Console': [
     'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80',
@@ -738,7 +738,7 @@ const categoryImagePool: Record<Category, string[]> = {
     'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1603481588273-2f908a9a7a1a?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1606144042614-28f8e1a1f3a9?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80',
   ],
   Television: [
     'https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=1200&q=80',
@@ -748,12 +748,12 @@ const categoryImagePool: Record<Category, string[]> = {
     'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=1200&q=80',
   ],
   'PC Accessories': [
-    'https://images.unsplash.com/photo-1541140134513-85a161dc4a00?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1625948515291-69613efd103f?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1541140134513-85a161dc4a00?auto=format&fit=crop&w=1200&q=80',
   ],
   Gadgets: [
     'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=1200&q=80',
@@ -765,11 +765,11 @@ const categoryImagePool: Record<Category, string[]> = {
     'https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=1200&q=80',
   ],
   Glasses: [
+    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1516912481808-3406841bd33c?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1520975867597-0f0b0f5c2f2e?auto=format&fit=crop&w=1200&q=80',
   ],
 };
 
