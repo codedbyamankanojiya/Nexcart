@@ -1,226 +1,537 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
 import { mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
-import { CheckCircle2, ChevronRight, CreditCard, MapPin, ShieldCheck, Lock } from 'lucide-react';
+import { CheckCircle2, ChevronRight, CreditCard, MapPin, ShieldCheck, Lock, Plus, Trash2, Edit2, X, Tag, Truck, Check, IndianRupee, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '../lib/utils';
 
-type Step = 'address' | 'payment' | 'review';
+type Step = 'cart' | 'address' | 'delivery' | 'payment' | 'review';
+
+const STEPS: { id: Step; label: string; icon: any }[] = [
+  { id: 'cart', label: 'Cart', icon: Tag },
+  { id: 'address', label: 'Address', icon: MapPin },
+  { id: 'delivery', label: 'Delivery', icon: Truck },
+  { id: 'payment', label: 'Payment', icon: CreditCard },
+  { id: 'review', label: 'Review', icon: CheckCircle2 },
+];
 
 export default function Checkout() {
-    const navigate = useNavigate();
-    const items = useCartStore((s) => s.items);
+  const navigate = useNavigate();
+  const items = useCartStore((s) => s.items);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
+  const removeItem = useCartStore((s) => s.removeProductFromCart);
+  const clearCart = useCartStore((s) => s.clearCart);
 
-    const [step, setStep] = useState<Step>('address');
-    const [paymentMethod, setPaymentMethod] = useState<string>('upi');
-    const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<Step>('cart');
+  const [paymentMethod, setPaymentMethod] = useState<string>('upi');
+  const [isLoading, setIsLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(0);
 
-    const cartProducts = items.map((item) => ({
-        ...mockProducts.find((p) => String(p.id) === item.productId)!,
-        quantity: item.quantity,
-    }));
+  // Mock saved addresses
+  const addresses = [
+    { id: 1, name: 'Aman Kumar', phone: '+91 98765 43210', address: '123, Tech Plaza, Sector 62', city: 'Noida', state: 'Uttar Pradesh', pincode: '201301', isDefault: true },
+    { id: 2, name: 'Aman Kumar', phone: '+91 99887 66554', address: '456, Software Hub, Tech Park', city: 'Bangalore', state: 'Karnataka', pincode: '560100', isDefault: false },
+  ];
 
-    const subtotal = cartProducts.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const tax = subtotal * 0.18;
-    const total = subtotal + tax;
+  const cartProducts = items.map((item) => ({
+    ...mockProducts.find((p) => String(p.id) === item.productId)!,
+    quantity: item.quantity,
+  })).filter(Boolean);
 
-    const handlePlaceOrder = async () => {
-        setIsLoading(true);
-        try {
-            toast.error('Order cannot be placed without payment confirmation. Complete payment to confirm the order.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const subtotal = cartProducts.reduce((sum, item) => sum + (item?.price ?? 0) * item.quantity, 0);
+  const shipping = subtotal >= 999 ? 0 : 49;
+  const tax = subtotal * 0.18;
+  const discount = couponApplied ? couponDiscount : 0;
+  const total = subtotal + shipping + tax - discount;
 
-    const steps = [
-        { id: 'address', label: 'Address', icon: MapPin },
-        { id: 'payment', label: 'Payment', icon: CreditCard },
-        { id: 'review', label: 'Review', icon: CheckCircle2 },
-    ];
+  const stepIndex = STEPS.findIndex(s => s.id === step);
 
-    if (items.length === 0) {
-        return (
-            <div className="flex min-h-screen flex-col items-center justify-center p-4">
-                <h2 className="text-2xl font-bold">Your cart is empty</h2>
-                <Link to="/" className="text-primary hover:underline">Go back to shopping</Link>
-            </div>
-        );
+  const applyCoupon = () => {
+    if (couponCode.toUpperCase() === 'POPKART20') {
+      setCouponApplied(true);
+      setCouponDiscount(subtotal * 0.2);
+      toast.success('20% discount applied!');
+    } else if (couponCode.toUpperCase() === 'FIRST50') {
+      setCouponApplied(true);
+      setCouponDiscount(50);
+      toast.success('₹50 discount applied!');
+    } else {
+      toast.error('Invalid coupon code');
     }
+  };
 
+  const handlePlaceOrder = async () => {
+    setIsLoading(true);
+    await new Promise(r => setTimeout(r, 2000));
+    toast.success('🎉 Order placed successfully! Order #ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase());
+    clearCart();
+    setIsLoading(false);
+    navigate('/orders');
+  };
+
+  if (items.length === 0 && step !== 'review') {
     return (
-        <div className="min-h-screen bg-muted/30 pb-20">
-            {/* Checkout Header */}
-            <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
-                <div className="pk-container flex h-16 items-center justify-between">
-                    <Link to="/" className="text-xl font-bold tracking-tighter">
-                        PopKart<span className="text-primary">.</span>
-                    </Link>
-                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                        <Lock className="h-4 w-4" />
-                        Secure Checkout
-                    </div>
-                </div>
-            </header>
-
-            <div className="pk-container py-8">
-                <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-
-                    {/* Main Content */}
-                    <div className="space-y-6">
-
-                        {/* Steps Indicator */}
-                        <div className="flex items-center justify-between rounded-xl border bg-card p-4 shadow-sm">
-                            {steps.map((s, idx) => {
-                                const isActive = s.id === step;
-                                const isCompleted = steps.findIndex(x => x.id === step) > idx;
-
-                                return (
-                                    <div key={s.id} className={`flex items-center gap-2 ${isActive ? 'text-primary' : isCompleted ? 'text-green-600' : 'text-muted-foreground'}`}>
-                                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${isActive ? 'border-primary bg-primary/10' : isCompleted ? 'border-green-600 bg-green-50' : 'border-current'}`}>
-                                            {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <s.icon className="h-4 w-4" />}
-                                        </div>
-                                        <span className="hidden text-sm font-semibold sm:inline">{s.label}</span>
-                                        {idx < steps.length - 1 && <ChevronRight className="h-4 w-4 text-muted-foreground/50 ml-2 sm:ml-4" />}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Step 1: Address */}
-                        {step === 'address' && (
-                            <div className="pk-slide-up rounded-xl border bg-card p-6 shadow-sm">
-                                <h2 className="text-xl font-bold">Select Delivery Address</h2>
-                                <div className="mt-6 grid gap-4">
-                                    <div className="rounded-lg border-2 border-primary bg-primary/5 p-4 shadow-sm">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <p className="font-bold">Aman Kumar</p>
-                                                <p className="text-sm text-foreground/80">123, Tech Plaza, Sector 62</p>
-                                                <p className="text-sm text-foreground/80">Noida, Uttar Pradesh 201301</p>
-                                                <p className="mt-1 text-sm font-medium">Phone: +91 98765 43210</p>
-                                            </div>
-                                            <input type="radio" checked readOnly className="h-5 w-5 accent-primary" />
-                                        </div>
-                                        <button onClick={() => setStep('payment')} className="pk-btn pk-btn-primary mt-4 w-full sm:w-auto px-8">
-                                            Deliver to this address
-                                        </button>
-                                    </div>
-
-                                    <div className="flex items-center justify-center rounded-lg border border-dashed p-6 text-sm text-muted-foreground hover:bg-muted/50 cursor-pointer">
-                                        + Add a new address
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 2: Payment */}
-                        {step === 'payment' && (
-                            <div className="pk-slide-up rounded-xl border bg-card p-6 shadow-sm">
-                                <h2 className="text-xl font-bold">Select Payment Method</h2>
-                                <div className="mt-6 space-y-3">
-                                    {['upi', 'card', 'cod'].map((method) => (
-                                        <label key={method} className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-all ${paymentMethod === method ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted/50'}`}>
-                                            <div className="flex items-center gap-3">
-                                                <input
-                                                    type="radio"
-                                                    name="payment"
-                                                    checked={paymentMethod === method}
-                                                    onChange={() => setPaymentMethod(method)}
-                                                    className="h-5 w-5 accent-primary"
-                                                />
-                                                <span className="font-medium capitalize">{method === 'cod' ? 'Cash on Delivery' : method.toUpperCase()}</span>
-                                            </div>
-                                            {method === 'upi' && <span className="text-xs font-medium text-green-600">Fastest</span>}
-                                        </label>
-                                    ))}
-                                </div>
-                                <div className="mt-6 flex gap-3">
-                                    <button onClick={() => setStep('address')} className="pk-btn pk-btn-outline px-6">Back</button>
-                                    <button onClick={() => setStep('review')} className="pk-btn pk-btn-primary px-8">Continue to Review</button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 3: Review */}
-                        {step === 'review' && (
-                            <div className="pk-slide-up space-y-6">
-                                <div className="rounded-xl border bg-card p-6 shadow-sm">
-                                    <h2 className="text-xl font-bold mb-4">Review Items</h2>
-                                    <div className="space-y-4">
-                                        {cartProducts.map((item) => (
-                                            <div key={item.id} className="flex gap-4 border-b pb-4 last:border-0 last:pb-0">
-                                                <img src={item.image} alt={item.name} className="h-20 w-20 rounded-md object-cover bg-muted" />
-                                                <div>
-                                                    <h3 className="font-semibold line-clamp-1">{item.name}</h3>
-                                                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                                                    <p className="font-bold text-primary mt-1">{formatPriceINR(item.price * item.quantity)}</p>
-                                                    <p className="text-xs text-green-600 mt-1">Estimated delivery by Tomorrow</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="rounded-xl border bg-yellow-50/50 p-4 text-sm text-yellow-800 border-yellow-200">
-                                    <ShieldCheck className="h-4 w-4 inline-block mr-2" />
-                                    Ordering with secure payment protection.
-                                </div>
-
-                                <div className="flex gap-3">
-                                    <button onClick={() => setStep('payment')} className="pk-btn pk-btn-outline px-6">Back</button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Order Summary Sidebar */}
-                    <div className="h-fit space-y-4 lg:sticky lg:top-24">
-                        <div className="rounded-xl border bg-card p-6 shadow-sm">
-                            <h3 className="text-lg font-bold">Order Summary</h3>
-                            <div className="mt-4 space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Items ({items.length}):</span>
-                                    <span>{formatPriceINR(subtotal)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Delivery:</span>
-                                    <span className="text-green-600">FREE</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Tax:</span>
-                                    <span>{formatPriceINR(tax)}</span>
-                                </div>
-                                <div className="my-2 h-px bg-border" />
-                                <div className="flex justify-between text-lg font-bold text-primary">
-                                    <span>Order Total:</span>
-                                    <span>{formatPriceINR(total)}</span>
-                                </div>
-                            </div>
-
-                            {step === 'review' ? (
-                                <button
-                                    onClick={handlePlaceOrder}
-                                    disabled={isLoading}
-                                    className="pk-btn pk-btn-primary pk-btn-shine mt-6 w-full text-base font-bold shadow-lg h-12"
-                                >
-                                    {isLoading ? 'Processing...' : 'Place Your Order'}
-                                </button>
-                            ) : (
-                                <div className="mt-6 rounded-lg bg-muted/50 p-3 text-xs text-center text-muted-foreground">
-                                    Complete steps to place order
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="rounded-xl border bg-card p-4 text-xs text-muted-foreground text-center">
-                            <p>Returns Policy • Privacy Policy</p>
-                        </div>
-                    </div>
-
-                </div>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-muted/50 via-background to-muted/30 pk-aurora">
+        <div className="relative overflow-hidden rounded-3xl border bg-card/90 p-12 text-center shadow-2xl max-w-md pk-glass">
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="relative">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-sky-500/20 shadow-xl mb-6">
+              <Tag className="h-12 w-12 text-primary" />
             </div>
+            <h2 className="text-2xl font-bold tracking-tight">Your cart is empty</h2>
+            <p className="mt-3 text-muted-foreground">Looks like you haven't added anything to your cart yet.</p>
+            <Link to="/" className="pk-btn pk-btn-primary pk-btn-shine mt-8 inline-flex h-12 px-8 text-base font-semibold shadow-xl">
+              Start Shopping
+            </Link>
+          </div>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
+        <div className="pk-container flex h-16 items-center justify-between">
+          <Link to="/" className="text-xl font-bold tracking-tighter">
+            <span className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">PopKart</span>
+            <span className="text-primary">.</span>
+          </Link>
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Lock className="h-4 w-4" />
+            Secure Checkout
+          </div>
+        </div>
+      </header>
+
+      <div className="pk-container py-6 max-w-6xl">
+        {/* Progress Steps */}
+        <div className="flex items-center justify-between mb-8 overflow-x-auto pk-no-scrollbar">
+          {STEPS.map((s, idx) => {
+            const isActive = s.id === step;
+            const isCompleted = idx < stepIndex;
+            return (
+              <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
+                <div className={cn(
+                  'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all font-bold text-sm',
+                  isCompleted ? 'border-emerald-500 bg-emerald-500 text-white' :
+                  isActive ? 'border-primary bg-primary/10 text-primary' :
+                  'border-muted-foreground/30 text-muted-foreground/30'
+                )}>
+                  {isCompleted ? <Check className="h-5 w-5" /> : <s.icon className="h-4 w-4" />}
+                </div>
+                <span className={cn('text-sm font-medium hidden sm:block', isActive ? 'text-primary' : isCompleted ? 'text-emerald-600' : 'text-muted-foreground')}>
+                  {s.label}
+                </span>
+                {idx < STEPS.length - 1 && (
+                  <div className={cn('h-0.5 w-8 sm:w-16 mx-2 rounded-full', idx < stepIndex ? 'bg-emerald-500' : 'bg-muted')} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+          {/* Main Content */}
+          <div className="space-y-5">
+            {/* Step 1: Cart Review */}
+            {step === 'cart' && (
+              <div className="pk-section p-5 pk-slide-up">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-xl font-bold">Your Cart ({items.length} items)</h2>
+                  <Link to="/" className="text-sm font-medium text-primary hover:underline">
+                    Continue Shopping
+                  </Link>
+                </div>
+
+                <div className="space-y-4">
+                  {cartProducts.map((item) => (
+                    <div key={item.id} className="flex gap-4 rounded-2xl border bg-card/80 p-4 transition-all hover:border-primary/20 pk-glass">
+                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
+                        <img src={item.image} alt={item.name} className="h-full w-full object-cover hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate(`/product/${item.id}`)} />
+                      </div>
+                      <div className="flex flex-1 flex-col justify-between min-w-0">
+                        <div>
+                          <div className="text-xs text-muted-foreground font-semibold">{item.category}</div>
+                          <h4 className="font-semibold line-clamp-1 cursor-pointer hover:text-primary" onClick={() => navigate(`/product/${item.id}`)}>{item.name}</h4>
+                          <div className="mt-1 flex items-center gap-1 text-xs">
+                            <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700">
+                              ⭐ {item.rating}
+                            </span>
+                            <span className="text-muted-foreground">{item.reviews} reviews</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-base font-bold text-primary">{formatPriceINR(item.price * item.quantity)}</span>
+                          {item.comparePrice && item.comparePrice > item.price && (
+                            <span className="text-xs text-muted-foreground line-through">{formatPriceINR(item.comparePrice)}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end justify-between">
+                        <button type="button" onClick={() => removeItem(String(item.id))} className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button type="button" onClick={() => updateQuantity(String(item.id), item.quantity - 1)} className="pk-btn pk-btn-outline h-7 w-7 p-0 flex items-center justify-center text-xs" disabled={item.quantity <= 1}>−</button>
+                          <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                          <button type="button" onClick={() => updateQuantity(String(item.id), item.quantity + 1)} className="pk-btn pk-btn-outline h-7 w-7 p-0 flex items-center justify-center text-xs" disabled={item.quantity >= 5}>+</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button onClick={() => setStep('address')} className="pk-btn pk-btn-primary pk-btn-shine mt-6 w-full h-12 text-base font-bold shadow-lg">
+                  Proceed to Address
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            )}
+
+            {/* Step 2: Address */}
+            {step === 'address' && (
+              <div className="pk-section p-5 pk-slide-up">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-xl font-bold">Select Delivery Address</h2>
+                </div>
+
+                <div className="grid gap-4">
+                  {addresses.map((addr) => (
+                    <div
+                      key={addr.id}
+                      onClick={() => setSelectedAddress(addr.id)}
+                      className={cn(
+                        'cursor-pointer rounded-2xl border-2 p-5 transition-all',
+                        selectedAddress === addr.id
+                          ? 'border-primary bg-primary/5 shadow-md'
+                          : 'border-border/50 hover:border-primary/30'
+                      )}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold">{addr.name}</span>
+                            {addr.isDefault && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">Default</span>}
+                          </div>
+                          <div className="mt-1 text-sm text-muted-foreground">{addr.address}</div>
+                          <div className="mt-0.5 text-sm text-muted-foreground">{addr.city}, {addr.state} - {addr.pincode}</div>
+                          <div className="mt-1 text-sm font-medium">Phone: {addr.phone}</div>
+                        </div>
+                        <div className={cn('h-5 w-5 rounded-full border-2 flex items-center justify-center', selectedAddress === addr.id ? 'border-primary bg-primary' : 'border-muted-foreground/30')}>
+                          {selectedAddress === addr.id && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAddressForm(true)}
+                    className="flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border/50 p-5 text-sm font-medium text-muted-foreground hover:border-primary/30 hover:text-primary transition-all"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Address
+                  </button>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep('cart')} className="pk-btn pk-btn-outline px-6 h-11">
+                    <ChevronLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                  <button onClick={() => setStep('delivery')} className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-11 font-semibold">
+                    Continue to Delivery
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Delivery */}
+            {step === 'delivery' && (
+              <div className="pk-section p-5 pk-slide-up">
+                <h2 className="text-xl font-bold mb-5">Delivery Options</h2>
+                <div className="space-y-3">
+                  <label className={cn(
+                    'flex items-center gap-4 rounded-2xl border-2 p-5 cursor-pointer transition-all',
+                    true ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/30'
+                  )}>
+                    <input type="radio" name="delivery" defaultChecked className="h-5 w-5 accent-primary" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Truck className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Standard Delivery</span>
+                      </div>
+                      <div className="mt-1 text-sm text-muted-foreground">2-4 business days</div>
+                    </div>
+                    <div className="text-sm font-semibold text-emerald-600">FREE</div>
+                  </label>
+
+                  <label className="flex items-center gap-4 rounded-2xl border-2 border-border/50 p-5 cursor-pointer transition-all hover:border-primary/30">
+                    <input type="radio" name="delivery" className="h-5 w-5 accent-primary" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Truck className="h-5 w-5 text-sky-500" />
+                        <span className="font-semibold">Express Delivery</span>
+                      </div>
+                      <div className="mt-1 text-sm text-muted-foreground">Next business day</div>
+                    </div>
+                    <div className="text-sm font-semibold">₹99</div>
+                  </label>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep('address')} className="pk-btn pk-btn-outline px-6 h-11">
+                    <ChevronLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                  <button onClick={() => setStep('payment')} className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-11 font-semibold">
+                    Continue to Payment
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Payment */}
+            {step === 'payment' && (
+              <div className="pk-section p-5 pk-slide-up">
+                <h2 className="text-xl font-bold mb-5">Select Payment Method</h2>
+                <div className="space-y-3">
+                  {[
+                    { id: 'upi', label: 'UPI', sub: 'Pay with any UPI app', icon: '💳', badge: 'Fastest' },
+                    { id: 'card', label: 'Credit/Debit Card', sub: 'Visa, Mastercard, RuPay', icon: '💳', badge: null },
+                    { id: 'nb', label: 'Net Banking', sub: 'All major banks supported', icon: '🏦', badge: null },
+                    { id: 'cod', label: 'Cash on Delivery', sub: 'Pay when you receive', icon: '💵', badge: null },
+                  ].map((method) => (
+                    <label
+                      key={method.id}
+                      className={cn(
+                        'flex items-center gap-4 rounded-2xl border-2 p-5 cursor-pointer transition-all',
+                        paymentMethod === method.id
+                          ? 'border-primary bg-primary/5 shadow-md'
+                          : 'border-border/50 hover:border-primary/30'
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        value={method.id}
+                        checked={paymentMethod === method.id}
+                        onChange={() => setPaymentMethod(method.id)}
+                        className="h-5 w-5 accent-primary"
+                      />
+                      <div className="text-2xl">{method.icon}</div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{method.label}</span>
+                          {method.badge && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">{method.badge}</span>}
+                        </div>
+                        <div className="mt-0.5 text-sm text-muted-foreground">{method.sub}</div>
+                      </div>
+                      {paymentMethod === method.id && <Check className="h-5 w-5 text-primary" />}
+                    </label>
+                  ))}
+                </div>
+
+                {/* Coupon Section */}
+                <div className="mt-6 rounded-2xl border bg-card/80 p-5 pk-glass">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Tag className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold">Apply Coupon</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Enter coupon code"
+                      className="pk-input flex-1 h-10 text-sm"
+                      disabled={couponApplied}
+                    />
+                    <button
+                      type="button"
+                      onClick={applyCoupon}
+                      disabled={couponApplied || !couponCode.trim()}
+                      className="pk-btn pk-btn-primary h-10 px-4 text-sm font-semibold disabled:opacity-50"
+                    >
+                      {couponApplied ? '✓ Applied' : 'Apply'}
+                    </button>
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Try: <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('POPKART20')}>POPKART20</span> for 20% off or <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('FIRST50')}>FIRST50</span> for ₹50 off
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep('delivery')} className="pk-btn pk-btn-outline px-6 h-11">
+                    <ChevronLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                  <button onClick={() => setStep('review')} className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-11 font-semibold">
+                    Review Order
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Review */}
+            {step === 'review' && (
+              <div className="pk-section p-5 pk-slide-up space-y-5">
+                <h2 className="text-xl font-bold">Review Your Order</h2>
+
+                {/* Address Summary */}
+                <div className="rounded-2xl border bg-card/80 p-4 pk-glass">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-muted-foreground">Delivering to:</span>
+                    <button type="button" onClick={() => setStep('address')} className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                      <Edit2 className="h-3 w-3" /> Change
+                    </button>
+                  </div>
+                  <div className="font-semibold">{addresses.find(a => a.id === selectedAddress)?.name}</div>
+                  <div className="text-sm text-muted-foreground mt-0.5">
+                    {addresses.find(a => a.id === selectedAddress)?.address}, {addresses.find(a => a.id === selectedAddress)?.city}
+                  </div>
+                </div>
+
+                {/* Items */}
+                <div className="rounded-2xl border bg-card/80 p-4 pk-glass">
+                  <div className="text-sm font-semibold text-muted-foreground mb-3">Items ({items.length})</div>
+                  <div className="space-y-3">
+                    {cartProducts.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3">
+                        <div className="h-14 w-14 overflow-hidden rounded-lg bg-muted flex-shrink-0">
+                          <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold line-clamp-1">{item.name}</div>
+                          <div className="text-xs text-muted-foreground">Qty: {item.quantity}</div>
+                        </div>
+                        <div className="text-sm font-bold text-primary">{formatPriceINR(item.price * item.quantity)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Payment Method */}
+                <div className="rounded-2xl border bg-card/80 p-4 pk-glass">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-semibold">Payment via:</span>
+                    </div>
+                    <button type="button" onClick={() => setStep('payment')} className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+                      <Edit2 className="h-3 w-3" /> Change
+                    </button>
+                  </div>
+                  <div className="mt-1 font-semibold capitalize">{paymentMethod === 'nb' ? 'Net Banking' : paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod.toUpperCase()}</div>
+                </div>
+
+                {/* Security Note */}
+                <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 p-4">
+                  <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" />
+                  <div className="text-sm">
+                    <span className="font-semibold text-emerald-700 dark:text-emerald-500">Secure Payment Guarantee</span>
+                    <p className="mt-0.5 text-xs text-muted-foreground">Your payment information is encrypted and never stored on our servers.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setStep('payment')} className="pk-btn pk-btn-outline px-6 h-11">
+                    <ChevronLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                  <button
+                    onClick={handlePlaceOrder}
+                    disabled={isLoading}
+                    className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-12 text-base font-bold shadow-xl"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                        Processing...
+                      </span>
+                    ) : (
+                      <>
+                        <Lock className="h-4 w-4" />
+                        Place Order · {formatPriceINR(total)}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Order Summary Sidebar */}
+          <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            <div className="pk-section p-5">
+              <h3 className="text-lg font-bold">Order Summary</h3>
+
+              <div className="mt-4 space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Subtotal ({items.length} items)</span>
+                  <span>{formatPriceINR(subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span className={shipping === 0 ? 'text-emerald-600 font-semibold' : ''}>
+                    {shipping === 0 ? 'FREE' : formatPriceINR(shipping)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Tax (GST 18%)</span>
+                  <span>{formatPriceINR(tax)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-emerald-600">
+                    <span>Coupon Discount</span>
+                    <span className="font-semibold">-{formatPriceINR(discount)}</span>
+                  </div>
+                )}
+                <div className="h-px bg-border my-2" />
+                <div className="flex justify-between text-lg font-extrabold">
+                  <span>Total</span>
+                  <span className="text-primary">{formatPriceINR(total)}</span>
+                </div>
+                {subtotal < 999 && (
+                  <div className="rounded-xl bg-gradient-to-r from-primary/10 to-sky-500/10 p-3 text-xs text-center">
+                    Add <span className="font-semibold text-primary">₹{999 - subtotal}</span> more to get free shipping!
+                  </div>
+                )}
+              </div>
+
+              {couponApplied && (
+                <div className="mt-4 rounded-xl bg-emerald-100/50 border border-emerald-500/20 p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
+                    <Check className="h-4 w-4" />
+                    Coupon applied: -{formatPriceINR(discount)}
+                  </div>
+                  <button type="button" onClick={() => { setCouponApplied(false); setCouponDiscount(0); }} className="text-xs text-emerald-600 hover:underline">
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Secure Payment Badge */}
+            <div className="pk-section p-4 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+              <Lock className="h-4 w-4" />
+              <span>256-bit SSL Encrypted Payment</span>
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
