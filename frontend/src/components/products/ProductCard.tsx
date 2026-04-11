@@ -1,5 +1,5 @@
 import { useState, type SyntheticEvent, memo, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, Star, Eye, Sparkles, Zap, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatPriceINR } from '../../lib/format';
@@ -44,10 +44,10 @@ function ProductCard({ product }: ProductCardProps) {
     return null;
   })();
 
-  const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
+  const handleImageError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
     const fallbacks = [
-      categoryImages[product.category?.name || typeof product.category === 'string' ? product.category : ''],
+      (categoryImages as any)[product.category?.name || typeof product.category === 'string' ? product.category : ''],
       'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
       'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image',
     ].filter(Boolean) as string[];
@@ -139,7 +139,7 @@ function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             loading="lazy"
             decoding="async"
-            onError={handleImgError}
+            onError={handleImageError}
             onLoad={() => setIsImgLoaded(true)}
             className={cn(
               'h-full w-full object-cover transition-all duration-700',
@@ -364,7 +364,7 @@ function ProductCard({ product }: ProductCardProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setIsQuickViewOpen(false); navigate(`/product/${product.id}`); }}
+                    onClick={() => { setIsQuickViewOpen(false); window.location.href = `/product/${product.id}`; }}
                     className="pk-btn pk-btn-outline flex-1 h-12 text-sm font-semibold"
                   >
                     View Details

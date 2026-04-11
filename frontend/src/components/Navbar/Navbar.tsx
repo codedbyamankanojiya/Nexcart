@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, Bell, User, ChevronDown, Zap, Star, TrendingUp } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, User, ChevronDown, Zap, TrendingUp } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { categorySectionId } from '../../lib/slug';
 import { scrollToId } from '../../lib/scroll';
 import { useTheme } from '../providers/ThemeProvider';
@@ -8,9 +8,7 @@ import { cn } from '../../lib/utils';
 import { useCatalogStore } from '../../stores/catalogStore';
 import { useCartStore } from '../../stores/cartStore';
 import { useAuthStore } from '../../stores/authStore';
-import { mockProducts } from '../../data/mockProducts';
-
-const CATEGORIES = ['Smartphone', 'Laptop', 'Gadgets', 'PC Accessories', 'Gaming Console', 'Wearables', 'Audio', 'Fashion'];
+import { mockProducts, categories as CATEGORIES } from '../../data/mockProducts';
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
@@ -91,7 +89,6 @@ export default function Navbar() {
   };
 
   const submitSearch = () => {
-    const q = localSearch.trim();
     setSearchTerm(localSearch);
     setShowResults(false);
     goToSection('shop');
@@ -99,7 +96,7 @@ export default function Navbar() {
 
   // Close on outside click
   useEffect(() => {
-    const onPointerDown = (e: MouseEvent) => {
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node;
       if (categoryRef.current && !categoryRef.current.contains(target)) {
         setIsCategoryOpen(false);
@@ -331,7 +328,7 @@ export default function Navbar() {
             {/* Cart */}
             <button
               type="button"
-              onClick={() => { navigate('/cart'); }}
+              onClick={() => { navigate('/cart'); closeAll(); }}
               className="pk-btn pk-btn-outline relative h-10 w-10 shrink-0 hover:bg-accent/70"
               aria-label="Open cart"
             >
