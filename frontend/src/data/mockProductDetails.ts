@@ -23,21 +23,8 @@ function seededInt(seed: number) {
   return x - Math.floor(x);
 }
 
-function makeImages(base: string, seed: number) {
-  const widths = [1200, 1200, 1200, 1200];
-  return widths.map((w, idx) => {
-    try {
-      const u = new URL(base);
-      u.searchParams.set('w', String(w));
-      u.searchParams.set('q', '80');
-      u.searchParams.set('auto', 'format');
-      u.searchParams.set('fit', 'crop');
-      u.searchParams.set('sig', String(seed + idx * 7));
-      return u.toString();
-    } catch {
-      return base;
-    }
-  });
+function makeImages(base: string) {
+  return [base, base, base, base];
 }
 
 function makeSpecs(product: Product): ProductSpec[] {
@@ -182,7 +169,7 @@ function makeQA(product: Product): ProductQuestion[] {
 export function getProductDetails(product: Product): ProductDetailsData {
   return {
     productId: product.id,
-    images: makeImages(product.image, product.id),
+    images: makeImages(product.image),
     highlights: makeHighlights(product),
     specs: makeSpecs(product),
     boxContents: ['Main unit', 'User guide', 'Warranty card'],

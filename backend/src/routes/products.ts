@@ -98,6 +98,7 @@ router.get('/', async (req, res) => {
 
     const productsWithStats = products.map(product => ({
       ...product,
+      images: Array.isArray(product.images) ? product.images : [],
       averageRating: product.reviews.length > 0 
         ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length 
         : 0,
@@ -154,6 +155,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({
       ...product,
+      images: Array.isArray(product.images) ? product.images : [],
       averageRating,
       reviewCount: product.reviews.length,
     });
