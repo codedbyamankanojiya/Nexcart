@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
+import { ordersAPI, type CreateOrderData } from '../lib/orders';
 import { mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
-import { CheckCircle2, ChevronRight, CreditCard, MapPin, ShieldCheck, Lock, Plus, Trash2, Edit2, X, Tag, Truck, Check, IndianRupee, ChevronLeft } from 'lucide-react';
+import { CheckCircle2, ChevronRight, CreditCard, MapPin, ShieldCheck, Lock, Plus, Trash2, Edit2, Tag, Truck, Check, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 
@@ -20,8 +21,8 @@ const STEPS: { id: Step; label: string; icon: any }[] = [
 export default function Checkout() {
   const navigate = useNavigate();
   const items = useCartStore((s) => s.items);
-  const updateQuantity = useCartStore((s) => s.updateQuantity);
-  const removeItem = useCartStore((s) => s.removeProductFromCart);
+  const updateQuantity = useCartStore((s) => s.setQty);
+  const removeItem = useCartStore((s) => s.removeFromCart);
   const clearCart = useCartStore((s) => s.clearCart);
 
   const [step, setStep] = useState<Step>('cart');
@@ -30,7 +31,7 @@ export default function Checkout() {
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponDiscount, setCouponDiscount] = useState(0);
-  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [, setShowAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(0);
 
   // Mock saved addresses
@@ -67,12 +68,39 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
+    if (!selectedAddress) {
+      toast.error('Please select a delivery address');
+      return;
+    }
+
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    toast.success('🎉 Order placed successfully! Order #ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase());
-    clearCart();
-    setIsLoading(false);
-    navigate('/orders');
+    try {
+      // Create order with PENDING status
+      const orderData = {
+        items: items.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        shippingAddress: addresses.find(a => a.id === selectedAddress),
+        paymentMethod,
+        totalAmount: total
+      };
+
+      const response = await ordersAPI.createOrder(orderData as CreateOrderData);
+      
+      toast.success('Order created! Please complete payment to confirm');
+      console.log('Order created:', response);
+      
+      // Navigate to payment page or show payment options
+      clearCart();
+      navigate('/orders');
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      toast.error('Failed to create order. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (items.length === 0 && step !== 'review') {

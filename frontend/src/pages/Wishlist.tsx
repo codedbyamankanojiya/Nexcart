@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
 import { mockProducts } from '../data/mockProducts';
-import { formatPriceINR } from '../lib/format';
-import { Heart, Sparkles, Trash2, ShoppingCart, Share2, Bell, MoveRight, Filter, X } from 'lucide-react';
+
+import { Heart, Sparkles, Trash2, ShoppingCart, Share2, Bell, MoveRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '../lib/utils';
+
 import ProductCard from '../components/products/ProductCard';
 import { useState, useMemo } from 'react';
 

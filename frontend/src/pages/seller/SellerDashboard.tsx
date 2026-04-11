@@ -1,16 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { productsAPI } from '../../lib/products';
 import {
-  BarChart3, Package, Users, IndianRupee, TrendingUp, TrendingDown, Eye, ShoppingCart,
+  Package, Users, IndianRupee, TrendingUp, Eye, ShoppingCart,
   Star, ArrowUpRight, ArrowDownRight, ChevronRight, Menu, X, Bell, Settings, LogOut,
-  Plus, Edit2, Trash2, Copy, ExternalLink, DollarSign, CreditCard, Clock, CheckCircle2,
-  AlertTriangle, PackageCheck, Truck, BarChart2, PieChart, Activity, RefreshCw
+  Plus, Edit2, Trash2, ExternalLink, DollarSign, CreditCard, Clock, CheckCircle2,
+  PackageCheck, Truck, BarChart2, PieChart, Activity, RefreshCw
 } from 'lucide-react';
 import { formatPriceINR } from '../../lib/format';
 import { cn } from '../../lib/utils';
-import { toast } from 'sonner';
 
 // Simple inline chart components (no external dependency)
 function SimpleBarChart({ data, height = 200 }: { data: { label: string; value: number }[]; height?: number }) {
@@ -30,7 +29,7 @@ function SimpleBarChart({ data, height = 200 }: { data: { label: string; value: 
   );
 }
 
-function SimpleLineChart({ data, height = 160 }: { data: { label: string; value: number }[]; height?: number }) {
+function SimpleLineChart({ data }: { data: { label: string; value: number }[]; height?: number }) {
   const max = Math.max(...data.map(d => d.value), 1);
   const min = Math.min(...data.map(d => d.value), 0);
   const range = max - min || 1;
@@ -154,9 +153,8 @@ function OrderStatusBadge({ status }: { status: string }) {
 
 export default function SellerDashboard() {
   const { user } = useAuthStore();
-  const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -627,7 +625,7 @@ export default function SellerDashboard() {
                 <div className="pk-section p-5">
                   <h3 className="text-lg font-bold mb-4">Revenue by Month</h3>
                   <div className="h-[200px]">
-                    <SimpleBarChart data={ordersData.map((d, i) => ({ label: d.label, value: d.value * 150 }))} />
+                    <SimpleBarChart data={ordersData.map((d) => ({ label: d.label, value: d.value * 150 }))} />
                   </div>
                 </div>
               </div>

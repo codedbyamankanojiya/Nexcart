@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
 import { mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
-import { ShoppingCart, Sparkles, Trash2, Minus, Plus, X, Tag, Truck, ChevronRight, Heart, MoveRight, ShieldCheck, Lock, AlertCircle } from 'lucide-react';
+import { ShoppingCart, Sparkles, Trash2, Minus, Plus, Tag, Truck, ChevronRight, Heart, ShieldCheck, Lock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 

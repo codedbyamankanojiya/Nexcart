@@ -106,6 +106,7 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
           });
         } catch (error) {
+          console.error('Auth check failed:', error);
           localStorage.removeItem('token');
           set({
             user: null,

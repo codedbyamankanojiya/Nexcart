@@ -27,6 +27,7 @@ export interface ProductDetailsData {
   images: string[];
   highlights: string[];
   specs: ProductSpec[];
+  description?: string;
   boxContents: string[];
   warranty: string;
   reviews: ProductReview[];

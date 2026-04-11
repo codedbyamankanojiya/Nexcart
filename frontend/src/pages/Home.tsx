@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, Zap, Clock, Truck, Shield, ChevronRight, ArrowRight, Flame, BadgeCheck, Package, Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Package, Search, SlidersHorizontal, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { categories, categoryImages, mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
@@ -61,7 +61,7 @@ function FlashSaleTimer() {
         { v: timeLeft.hours, l: 'H' },
         { v: timeLeft.minutes, l: 'M' },
         { v: timeLeft.seconds, l: 'S' },
-      ].map(({ v, l }, i) => (
+      ].map(({ v }, i) => (
         <div key={i} className="flex items-center gap-0.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-sm font-bold text-white shadow-md">
             {String(v).padStart(2, '0')}
@@ -172,8 +172,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   const addToCart = useCartStore((s) => s.addProductToCart);
-  const wishlist = useCartStore((s) => s.wishlist);
-  const toggleWishlist = useCartStore((s) => s.toggleWishlist);
+
 
   const currentCategory = useCatalogStore((s) => s.currentCategory);
   const setCurrentCategory = useCatalogStore((s) => s.setCurrentCategory);
@@ -182,7 +181,7 @@ export default function Home() {
   const sortBy = useCatalogStore((s) => s.sortBy);
   const setSortBy = useCatalogStore((s) => s.setSortBy);
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['products'],
     queryFn: () => productsAPI.getProducts({ limit: 100 }),
   });
@@ -301,7 +300,7 @@ export default function Home() {
 
   // Newsletter state
   const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const [, setSubscribed] = useState(false);
 
   return (
     <div className="pb-16">

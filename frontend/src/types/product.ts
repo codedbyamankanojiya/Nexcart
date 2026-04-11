@@ -14,6 +14,7 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  comparePrice?: number;
   category: Category;
   image: string;
   description: string;

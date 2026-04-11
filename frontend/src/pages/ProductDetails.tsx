@@ -1,6 +1,6 @@
-import { useMemo, useState, type SyntheticEvent, useRef, useEffect } from 'react';
+import { useMemo, useState, type SyntheticEvent, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { BadgeCheck, ChevronRight, Heart, MessageCircleQuestion, PackageCheck, ShoppingCart, Star, Truck, Shield, Minus, Plus, Check, Ruler, Share2, ChevronDown, ChevronUp, ZoomIn, ReturnPath, Clock, MapPin, Package } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Heart, MessageCircleQuestion, ShoppingCart, Star, Truck, Shield, Minus, Plus, Check, Share2, ChevronDown, ChevronUp, ZoomIn, RefreshCw, Clock, MapPin, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { mockProducts, categoryImages } from '../data/mockProducts';
 import { getProductDetails } from '../data/mockProductDetails';
@@ -32,7 +32,7 @@ export default function ProductDetails() {
     };
   }, [id, productId]);
 
-  const { data: qData, isLoading } = useQuery({
+  const { data: qData } = useQuery({
     queryKey: ['product', id],
     queryFn: () => id ? productsAPI.getProduct(id) : null,
     enabled: !!id,
@@ -351,7 +351,7 @@ export default function ProductDetails() {
           <div className="grid gap-3">
             {[
               { icon: Truck, title: 'Free Delivery', sub: 'On orders above ₹999' },
-              { icon: ReturnPath, title: '7-Day Returns', sub: 'Hassle-free returns' },
+              { icon: RefreshCw, title: '7-Day Returns', sub: 'Hassle-free returns' },
               { icon: Shield, title: 'Warranty', sub: details?.warranty ?? 'Manufacturer warranty' },
               { icon: BadgeCheck, title: 'Quality Assured', sub: 'Verified seller' },
             ].map(({ icon: Icon, title, sub }) => (
