@@ -15,20 +15,26 @@ import { cn } from '../lib/utils';
 
 // Particle Effect Component
 function Particles() {
+  const [particles, setParticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    setParticles([...Array(20)].map(() => ({
+      width: `${Math.random() * 6 + 2}px`,
+      height: `${Math.random() * 6 + 2}px`,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      animation: `pk-float ${Math.random() * 8 + 6}s ease-in-out infinite`,
+      animationDelay: `${Math.random() * 4}s`,
+    })));
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((style, i) => (
         <div
           key={i}
           className="absolute rounded-full bg-primary/20"
-          style={{
-            width: `${Math.random() * 6 + 2}px`,
-            height: `${Math.random() * 6 + 2}px`,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `pk-float ${Math.random() * 8 + 6}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 4}s`,
-          }}
+          style={style}
         />
       ))}
     </div>

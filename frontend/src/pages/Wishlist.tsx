@@ -16,7 +16,7 @@ export default function Wishlist() {
   const [sortBy, setSortBy] = useState<'recent' | 'price-low' | 'price-high' | 'name'>('recent');
 
   const wishlistProducts = useMemo(() => {
-    let products = mockProducts.filter(p => wishlistIds.includes(String(p.id)));
+    const products = mockProducts.filter(p => wishlistIds.includes(String(p.id)));
     switch (sortBy) {
       case 'price-low': return [...products].sort((a, b) => a.price - b.price);
       case 'price-high': return [...products].sort((a, b) => b.price - a.price);

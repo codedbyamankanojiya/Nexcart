@@ -291,7 +291,7 @@ export default function Checkout() {
                 <div className="space-y-3">
                   <label className={cn(
                     'flex items-center gap-4 rounded-2xl border-2 p-5 cursor-pointer transition-all',
-                    true ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/30'
+                    'border-primary bg-primary/5'
                   )}>
                     <input type="radio" name="delivery" defaultChecked className="h-5 w-5 accent-primary" />
                     <div className="flex-1">

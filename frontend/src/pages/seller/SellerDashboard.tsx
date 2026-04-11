@@ -70,11 +70,10 @@ function SimpleLineChart({ data }: { data: { label: string; value: number }[]; h
 
 function DonutChart({ data, size = 120 }: { data: { label: string; value: number; color: string }[]; size?: number }) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
-  let accumulated = 0;
-  const strokes = data.map((d) => {
+  const strokes = data.map((d, index) => {
+    const accumulated = data.slice(0, index).reduce((sum, item) => sum + item.value, 0);
     const start = (accumulated / total) * 100;
     const end = ((accumulated + d.value) / total) * 100;
-    accumulated += d.value;
     const startAngle = (start / 100) * 360;
     const endAngle = (end / 100) * 360;
     const x1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180);
