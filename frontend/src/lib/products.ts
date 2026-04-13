@@ -1,27 +1,29 @@
 import api from './api';
 
 export interface Product {
-  id: string;
+  id: string | number;
   name: string;
-  slug: string;
-  description: string;
+  slug?: string;
+  description?: string;
   price: number;
   comparePrice?: number;
-  sku: string;
-  trackQuantity: boolean;
-  quantity: number;
-  images: string[];
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
-  featured: boolean;
-  tags: string[];
-  categoryId: string;
-  sellerId: string;
-  createdAt: string;
-  updatedAt: string;
+  sku?: string;
+  trackQuantity?: boolean;
+  quantity?: number;
+  inStock?: boolean;
+  image?: string;
+  images?: string[];
+  status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  featured?: boolean;
+  tags?: string[];
+  categoryId?: string | number;
+  sellerId?: string | number;
+  createdAt?: string;
+  updatedAt?: string;
   category?: {
-    id: string;
+    id?: string;
     name: string;
-    slug: string;
+    slug?: string;
   };
   seller?: {
     id: string;
@@ -32,6 +34,8 @@ export interface Product {
   };
   averageRating?: number;
   reviewCount?: number;
+  rating?: number;
+  reviews?: number;
   variants?: ProductVariant[];
 }
 
@@ -39,7 +43,7 @@ export interface ProductVariant {
   id: string;
   productId: string;
   title: string;
-  options: any;
+  options: Record<string, unknown>;
   price: number;
   sku: string;
   quantity: number;

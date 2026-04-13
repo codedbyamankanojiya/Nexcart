@@ -6,7 +6,7 @@ export interface CreateOrderData {
     quantity: number;
     price: number;
   }>;
-  shippingAddress: any;
+  shippingAddress: Record<string, unknown>;
   paymentMethod: string;
   totalAmount: number;
 }
@@ -15,8 +15,8 @@ export interface Order {
   id: string;
   status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   paymentStatus: 'PENDING' | 'PAID' | 'FAILED';
-  items: any[];
-  shippingAddress: any;
+  items: Array<Record<string, unknown>>;
+  shippingAddress: Record<string, unknown>;
   paymentMethod: string;
   totalAmount: number;
   createdAt: string;

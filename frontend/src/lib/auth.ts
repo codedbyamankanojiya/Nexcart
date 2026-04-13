@@ -13,9 +13,20 @@ export interface SignupData {
   role?: 'CUSTOMER' | 'SELLER';
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'CUSTOMER' | 'SELLER' | 'ADMIN';
+  phone?: string;
+  avatar?: string;
+  customerProfile?: Record<string, unknown>;
+  sellerProfile?: Record<string, unknown>;
+}
+
 export interface AuthResponse {
   message: string;
-  user: any;
+  user: User;
   token: string;
 }
 
@@ -35,7 +46,7 @@ export const authAPI = {
     return response.data;
   },
 
-  getCurrentUser: async (): Promise<{ user: any }> => {
+  getCurrentUser: async (): Promise<{ user: User }> => {
     const response = await api.get('/api/auth/me');
     return response.data;
   },
