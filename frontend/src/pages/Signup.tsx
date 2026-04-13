@@ -58,7 +58,8 @@ export default function Signup() {
         role: formData.role,
       });
       toast.success('Account created successfully!');
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       toast.error(error.response?.data?.error || 'Signup failed');
     } finally {
       setIsLoading(false);

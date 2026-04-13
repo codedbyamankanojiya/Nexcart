@@ -1,17 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authAPI, type LoginData, type SignupData } from '../lib/auth';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'CUSTOMER' | 'SELLER' | 'ADMIN';
-  phone?: string;
-  avatar?: string;
-  customerProfile?: any;
-  sellerProfile?: any;
-}
+import { authAPI, type LoginData, type SignupData, type User } from '../lib/auth';
 
 interface AuthState {
   user: User | null;

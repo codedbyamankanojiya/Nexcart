@@ -108,7 +108,7 @@ export default function Wishlist() {
         <div className="flex gap-2">
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="pk-select h-11 w-[180px]"
           >
             <option value="recent">Recently Added</option>
@@ -155,18 +155,23 @@ export default function Wishlist() {
 
       {/* Wishlist Grid */}
       <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {wishlistProducts.map((product, i) => (
-          <div key={product.id} className="pk-slide-up" style={{ animationDelay: `${i * 0.05}s` }}>
+        {wishlistProducts.map((p, i) => {
+          const product = p as Record<string, unknown>;
+          return (
+          <div key={String(product.id)} className="pk-slide-up" style={{ animationDelay: `${i * 0.05}s` }}>
             <ProductCard product={{
               ...product,
-              images: (product as any).images || [(product as any).image],
-              quantity: (product as any).quantity ?? ((product as any).inStock ? 100 : 0),
-              averageRating: (product as any).averageRating || (product as any).rating || 0,
-              reviewCount: (product as any).reviewCount || (product as any).reviews || 0,
-              category: typeof product.category === 'object' ? product.category : { id: product.category, name: product.category }
-            }} />
+              id: product.id as string | number,
+              name: product.name as string,
+              price: product.price as number,
+              images: (product.images as string[]) || [product.image as string],
+              quantity: (product.quantity as number) ?? (product.inStock ? 100 : 0),
+              averageRating: (product.averageRating as number) || (product.rating as number) || 0,
+              reviewCount: (product.reviewCount as number) || (product.reviews as number) || 0,
+              category: typeof product.category === 'object' ? product.category : { name: product.category as string }
+            } as any} />
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Call to Action */}

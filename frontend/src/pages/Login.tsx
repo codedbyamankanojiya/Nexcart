@@ -30,7 +30,8 @@ export default function Login() {
       await login(formData);
       toast.success('Welcome back!');
       navigate('/');
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       toast.error(error.response?.data?.error || 'Login failed');
     } finally {
       setIsLoading(false);
