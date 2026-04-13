@@ -1,21 +1,23 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { cartAPI, type Cart, type CartItem } from '../lib/cart';
+import type { Product } from '../lib/products';
 
 interface CartState {
   cart: Cart | null;
   isLoading: boolean;
   itemCount: number;
   total: number;
-  // Local wishlist (for non-authenticated users)
+  // Local cart & wishlist (for non-authenticated users)
+  localItems: CartItem[];
   wishlist: string[];
 
   // Getters for component compatibility
   items: CartItem[];
 
   fetchCart: () => Promise<void>;
-  addToCart: (productId: string, quantity: number, variantId?: string) => Promise<void>;
-  addProductToCart: (product: { id: string | number;[key: string]: any }, quantity?: number) => Promise<void>;
+  addToCart: (product: Product, quantity: number, variantId?: string) => Promise<void>;
+  addProductToCart: (product: Product, quantity?: number) => Promise<void>;
   updateCartItem: (itemId: string, quantity: number) => Promise<void>;
   removeFromCart: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -35,14 +37,22 @@ export const useCartStore = create<CartState>()(
       isLoading: false,
       itemCount: 0,
       total: 0,
+      localItems: [],
       wishlist: [],
 
       // Getter for items (compatibility)
       get items() {
-        return get().cart?.items || [];
+        const token = localStorage.getItem('token');
+        if (token) {
+          return get().cart?.items || [];
+        }
+        return get().localItems;
       },
 
       fetchCart: async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
         set({ isLoading: true });
         try {
           const response = await cartAPI.getCart();
@@ -60,11 +70,42 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      addToCart: async (productId: string, quantity: number, variantId?: string) => {
+      addToCart: async (product: Product, quantity: number, variantId?: string) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          // Local cart logic
+          const currentLocal = get().localItems;
+          const existingIdx = currentLocal.findIndex(i => i.productId === product.id && i.variantId === variantId);
+
+          let updatedLocal: CartItem[];
+          if (existingIdx > -1) {
+            updatedLocal = [...currentLocal];
+            updatedLocal[existingIdx].quantity += quantity;
+          } else {
+            const newItem: CartItem = {
+              id: `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              cartId: 'local',
+              productId: String(product.id),
+              variantId,
+              quantity,
+              price: (product && typeof product.price === 'number') ? product.price : 0,
+              product: product || {}
+            };
+            updatedLocal = [...currentLocal, newItem];
+          }
+
+          const itemCount = updatedLocal.reduce((sum, i) => sum + i.quantity, 0);
+          const total = updatedLocal.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+          set({ localItems: updatedLocal, itemCount, total });
+          return;
+        }
+
         set({ isLoading: true });
         try {
           const response = await cartAPI.addToCart({
-            productId,
+            productId: String(product.id),
             quantity,
             variantId,
           });
@@ -82,11 +123,24 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      addProductToCart: async (product: { id: string | number;[key: string]: any }, quantity = 1) => {
-        return get().addToCart(String(product.id), quantity);
+      addProductToCart: async (product: Product, quantity = 1) => {
+        return get().addToCart(product, quantity);
       },
 
       updateCartItem: async (itemId: string, quantity: number) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          // Local update
+          const updatedLocal = get().localItems.map(item =>
+            item.id === itemId ? { ...item, quantity } : item
+          );
+          const itemCount = updatedLocal.reduce((sum, i) => sum + i.quantity, 0);
+          const total = updatedLocal.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+          set({ localItems: updatedLocal, itemCount, total });
+          return;
+        }
+
         set({ isLoading: true });
         try {
           const response = await cartAPI.updateCartItem(itemId, quantity);
@@ -105,6 +159,17 @@ export const useCartStore = create<CartState>()(
       },
 
       removeFromCart: async (itemId: string) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          // Local remove
+          const updatedLocal = get().localItems.filter(item => item.id !== itemId);
+          const itemCount = updatedLocal.reduce((sum, i) => sum + i.quantity, 0);
+          const total = updatedLocal.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+          set({ localItems: updatedLocal, itemCount, total });
+          return;
+        }
+
         set({ isLoading: true });
         try {
           await cartAPI.removeFromCart(itemId);
@@ -159,6 +224,13 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: async () => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          set({ localItems: [], itemCount: 0, total: 0 });
+          return;
+        }
+
         set({ isLoading: true });
         try {
           await cartAPI.clearCart();
@@ -181,6 +253,7 @@ export const useCartStore = create<CartState>()(
         itemCount: state.itemCount,
         total: state.total,
         wishlist: state.wishlist,
+        localItems: state.localItems,
       }),
     }
   )

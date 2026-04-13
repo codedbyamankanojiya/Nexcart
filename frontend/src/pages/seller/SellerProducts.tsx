@@ -40,8 +40,8 @@ export default function SellerProducts() {
   };
 
   const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.sku.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.sku || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -117,8 +117,8 @@ export default function SellerProducts() {
                     <td className="p-4 text-sm text-muted-foreground">{product.sku}</td>
                     <td className="p-4 font-medium">₹{product.price.toFixed(2)}</td>
                     <td className="p-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.quantity > 10 ? 'bg-emerald-500/10 text-emerald-500' : product.quantity > 0 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
-                        {product.quantity} in stock
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(product.quantity || 0) > 10 ? 'bg-emerald-500/10 text-emerald-500' : (product.quantity || 0) > 0 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
+                        {product.quantity || 0} in stock
                       </span>
                     </td>
                     <td className="p-4">
@@ -131,7 +131,7 @@ export default function SellerProducts() {
                         <Link to={`/seller/products/edit/${product.id}`} className="p-2 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/10 rounded-md">
                           <Edit2 className="w-4 h-4" />
                         </Link>
-                        <button onClick={() => handleDelete(product.id)} className="p-2 text-muted-foreground hover:text-destructive transition-colors hover:bg-destructive/10 rounded-md">
+                        <button onClick={() => handleDelete(String(product.id))} className="p-2 text-muted-foreground hover:text-destructive transition-colors hover:bg-destructive/10 rounded-md">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

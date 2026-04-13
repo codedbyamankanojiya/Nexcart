@@ -41,7 +41,8 @@ export default function ProductForm() {
 
     if (isEditing && id) {
       productsAPI.getProduct(id).then(res => {
-        setFormData(res as any);
+        const data = res as unknown as { product?: Product };
+        setFormData((data.product || res) as Partial<Product>);
       }).catch(() => {
         toast.error('Failed to load product');
         navigate('/seller/products');
@@ -94,8 +95,11 @@ export default function ProductForm() {
         toast.success('Product created successfully');
       }
       navigate('/seller/products');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error?.[0]?.message || 'Failed to save product');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: Array<{ message: string }> | string } } };
+      const apiError = error.response?.data?.error;
+      const message = Array.isArray(apiError) ? apiError[0]?.message : apiError;
+      toast.error(message || 'Failed to save product');
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -222,7 +226,7 @@ export default function ProductForm() {
 
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Status</label>
-                <select className="pk-select w-full" value={formData.status || 'DRAFT'} onChange={e => setFormData({...formData, status: e.target.value as any})}>
+                <select className="pk-select w-full" value={formData.status || 'DRAFT'} onChange={e => setFormData({...formData, status: e.target.value as 'ACTIVE' | 'DRAFT' | 'INACTIVE'})}>
                   <option value="ACTIVE">Active (Live in store)</option>
                   <option value="DRAFT">Draft (Hidden)</option>
                   <option value="INACTIVE">Inactive</option>

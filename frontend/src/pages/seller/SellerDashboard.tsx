@@ -11,6 +11,9 @@ import {
 import { formatPriceINR } from '../../lib/format';
 import { cn } from '../../lib/utils';
 
+import type { Product } from '../../lib/products';
+import type { ElementType } from 'react';
+
 // Simple inline chart components (no external dependency)
 function SimpleBarChart({ data, height = 200 }: { data: { label: string; value: number }[]; height?: number }) {
   const max = Math.max(...data.map(d => d.value), 1);
@@ -105,7 +108,7 @@ function DonutChart({ data, size = 120 }: { data: { label: string; value: number
 
 // Stat Card Component
 function StatCard({ title, value, change, changeType, icon: Icon, color }: {
-  title: string; value: string; change?: string; changeType?: 'up' | 'down'; icon: any; color: string
+  title: string; value: string; change?: string; changeType?: 'up' | 'down'; icon: ElementType; color: string
 }) {
   return (
     <div className="pk-section p-5 pk-hover-lift transition-all">
@@ -133,7 +136,7 @@ function StatCard({ title, value, change, changeType, icon: Icon, color }: {
 
 // Order Status Badge
 function OrderStatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: string; icon: any }> = {
+  const map: Record<string, { color: string; icon: ElementType }> = {
     'pending': { color: 'bg-amber-100 text-amber-700 border-amber-200', icon: Clock },
     'confirmed': { color: 'bg-sky-100 text-sky-700 border-sky-200', icon: CheckCircle2 },
     'processing': { color: 'bg-purple-100 text-purple-700 border-purple-200', icon: Activity },
@@ -152,7 +155,7 @@ function OrderStatusBadge({ status }: { status: string }) {
 
 export default function SellerDashboard() {
   const { user } = useAuthStore();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
