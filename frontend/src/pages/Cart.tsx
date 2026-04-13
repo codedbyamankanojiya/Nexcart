@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/cartStore';
-import { mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
 import { ShoppingCart, Sparkles, Trash2, Minus, Plus, Tag, Truck, ChevronRight, Heart, ShieldCheck, Lock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -22,8 +21,9 @@ export default function Cart() {
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set(items.map(i => i.productId)));
 
     const cartProducts = items.map((item) => ({
-        ...mockProducts.find((p) => String(p.id) === item.productId)!,
-        quantity: item.quantity,
+        ...item.product,
+        ...item,
+        id: item.productId, // Use productId for consistency
         cartItemId: item.id,
     })).filter(Boolean);
 
@@ -171,23 +171,21 @@ export default function Cart() {
                                     </div>
 
                                     {/* Product Image */}
-                                    <Link
-                                        to={`/product/${product.id}`}
-                                        className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-muted group"
-                                    >
+                                    <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-muted group">
                                         <img
-                                            src={product.image}
+                                            src={(product as any).images?.[0] || (product as any).image}
                                             alt={product.name}
-                                            className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                                            className="h-full w-full object-cover transition duration-500 group-hover:scale-110 cursor-pointer"
+                                            onClick={() => navigate(`/product/${product.id}`)}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </Link>
+                                    </div>
 
                                     {/* Product Details */}
                                     <div className="flex min-w-0 flex-1 flex-col justify-between">
                                         <div>
                                             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                {product.category}
+                                                {(product.category as any)?.name || String(product.category)}
                                             </div>
                                             <Link
                                                 to={`/product/${product.id}`}
@@ -197,9 +195,9 @@ export default function Cart() {
                                             </Link>
                                             <div className="mt-1.5 flex items-center gap-2">
                                                 <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                                                    ⭐ {product.rating}
+                                                    ⭐ {((product as any).averageRating || (product as any).rating || 0).toFixed(1)}
                                                 </span>
-                                                <span className="text-xs text-muted-foreground">{product.reviews} reviews</span>
+                                                <span className="text-xs text-muted-foreground">{(product as any).reviewCount || (product as any).reviews || 0} reviews</span>
                                             </div>
                                         </div>
 

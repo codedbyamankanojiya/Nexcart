@@ -5,10 +5,12 @@ import { mockProducts } from '../../data/mockProducts';
 import { formatPriceINR } from '../../lib/format';
 import { useCartStore } from '../../stores/cartStore';
 import Sheet from '../overlays/Sheet';
-import type { SyntheticEvent } from 'react';
+import { type SyntheticEvent, useMemo } from 'react';
 import { categoryImages } from '../../data/mockProducts';
 import type { Category } from '../../types/product';
 import { scrollToId } from '../../lib/scroll';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '../../lib/products';
 
 export default function WishlistDrawer({
   open,
@@ -24,7 +26,25 @@ export default function WishlistDrawer({
   const clearWishlist = useCartStore((s) => s.clearWishlist);
   const addToCart = useCartStore((s) => s.addProductToCart);
 
-  const items = mockProducts.filter((p) => wishlist.includes(String(p.id)));
+  const { data } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => productsAPI.getProducts({ limit: 100 }),
+  });
+
+  const items = useMemo(() => {
+    const apiProducts = data?.products || [];
+    const normalizedMockProducts = mockProducts.map(p => ({
+      ...p,
+      quantity: p.inStock ? 100 : 0,
+      averageRating: p.rating,
+      reviewCount: p.reviews,
+      images: [p.image],
+      category: { id: p.category, name: p.category },
+      inStock: p.inStock
+    }));
+    const allProducts = [...apiProducts, ...normalizedMockProducts];
+    return allProducts.filter(p => wishlist.includes(String(p.id)));
+  }, [wishlist, data]);
 
   const isCategory = (v: unknown): v is Category => {
     return typeof v === 'string' && v in categoryImages;
@@ -83,7 +103,7 @@ export default function WishlistDrawer({
                 type="button"
                 className="pk-btn pk-btn-primary pk-btn-shine h-10 flex-1 px-4 text-sm"
                 onClick={() => {
-                  const moveable = items.filter((i) => i.inStock);
+                  const moveable = items.filter((i) => (i as any).quantity > 0 || (i as any).inStock);
                   moveable.forEach((i) => addToCart(i));
                   toast(moveable.length > 0 ? 'Moved available items to cart' : 'No in-stock items to move');
                 }}
@@ -110,26 +130,34 @@ export default function WishlistDrawer({
               {items.map((item) => (
                 <div key={item.id} className="rounded-2xl border bg-card/70 p-3 pk-glass">
                   <div className="flex gap-3">
-                    <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-muted">
+                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
                       <img
-                        src={item.image}
+                        src={item.images?.[0] || (item as any).image}
                         alt={item.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform group-hover:scale-110"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => handleImgError(e, item.category)}
+                        onError={(e) => handleImgError(e, item.category?.name || String(item.category))}
                       />
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="line-clamp-2 text-sm font-semibold">{item.name}</div>
+                          <div
+                            className="line-clamp-2 text-sm font-semibold transition-colors hover:text-primary cursor-pointer"
+                            onClick={() => {
+                              onOpenChange(false);
+                              navigate(`/product/${item.id}`);
+                            }}
+                          >
+                            {item.name}
+                          </div>
                           <div className="mt-1 flex flex-wrap items-center gap-2">
                             <div className="inline-flex rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary">
                               {formatPriceINR(item.price)}
                             </div>
-                            {!item.inStock ? (
+                            {!((item as any).quantity > 0 || (item as any).inStock) ? (
                               <span className="rounded-full bg-destructive/10 px-2 py-1 text-[11px] font-semibold text-destructive">
                                 Out of stock
                               </span>
@@ -156,13 +184,13 @@ export default function WishlistDrawer({
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <button
                           type="button"
-                          disabled={!item.inStock}
+                          disabled={!((item as any).quantity > 0 || (item as any).inStock)}
                           className="pk-btn pk-btn-primary pk-btn-shine h-9 px-3 text-sm disabled:opacity-60"
                           onClick={() => {
-                            if (!item.inStock) return;
+                            if (!((item as any).quantity > 0 || (item as any).inStock)) return;
                             addToCart(item);
                             removeFromWishlist(String(item.id));
-                            toast('Moved to cart');
+                            toast.success('Moved to cart');
                           }}
                         >
                           <ShoppingCart className="mr-2 h-4 w-4" />

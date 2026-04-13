@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 
 import ProductCard from '../components/products/ProductCard';
 import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { productsAPI } from '../lib/products';
 
 export default function Wishlist() {
   const navigate = useNavigate();
@@ -15,15 +17,31 @@ export default function Wishlist() {
   const addToCart = useCartStore((s) => s.addProductToCart);
   const [sortBy, setSortBy] = useState<'recent' | 'price-low' | 'price-high' | 'name'>('recent');
 
+  const { data } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => productsAPI.getProducts({ limit: 100 }),
+  });
+
   const wishlistProducts = useMemo(() => {
-    const products = mockProducts.filter(p => wishlistIds.includes(String(p.id)));
+    const apiProducts = data?.products || [];
+    const normalizedMockProducts = mockProducts.map(p => ({
+      ...p,
+      quantity: p.inStock ? 100 : 0,
+      averageRating: p.rating,
+      reviewCount: p.reviews,
+      images: [p.image],
+      category: { id: p.category, name: p.category }
+    }));
+    const allProducts = [...apiProducts, ...normalizedMockProducts];
+    const products = allProducts.filter(p => wishlistIds.includes(String(p.id)));
+
     switch (sortBy) {
       case 'price-low': return [...products].sort((a, b) => a.price - b.price);
       case 'price-high': return [...products].sort((a, b) => b.price - a.price);
       case 'name': return [...products].sort((a, b) => a.name.localeCompare(b.name));
       default: return products;
     }
-  }, [wishlistIds, sortBy]);
+  }, [wishlistIds, sortBy, data]);
 
   const handleClearAll = () => {
     if (wishlistProducts.length === 0) return;
@@ -137,15 +155,15 @@ export default function Wishlist() {
 
       {/* Wishlist Grid */}
       <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {wishlistProducts.map((product) => (
-          <div key={product.id} className="pk-slide-up">
+        {wishlistProducts.map((product, i) => (
+          <div key={product.id} className="pk-slide-up" style={{ animationDelay: `${i * 0.05}s` }}>
             <ProductCard product={{
               ...product,
-              quantity: product.inStock ? 100 : 0,
-              averageRating: product.rating,
-              reviewCount: product.reviews,
-              images: [product.image],
-              category: { id: product.category, name: product.category }
+              images: (product as any).images || [(product as any).image],
+              quantity: (product as any).quantity ?? ((product as any).inStock ? 100 : 0),
+              averageRating: (product as any).averageRating || (product as any).rating || 0,
+              reviewCount: (product as any).reviewCount || (product as any).reviews || 0,
+              category: typeof product.category === 'object' ? product.category : { id: product.category, name: product.category }
             }} />
           </div>
         ))}
