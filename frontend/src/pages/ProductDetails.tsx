@@ -8,7 +8,7 @@ import { formatPriceINR } from '../lib/format';
 import { cn } from '../lib/utils';
 import { useCartStore } from '../stores/cartStore';
 import { useQuery } from '@tanstack/react-query';
-import { productsAPI } from '../lib/products';
+import { productsAPI, type Product } from '../lib/products';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -39,15 +39,15 @@ export default function ProductDetails() {
     retry: false
   });
 
-  const product = (qData?.product || qData || mockProduct) as any;
+  const product = (qData?.product || qData || mockProduct) as Product;
 
-  const details = useMemo(() => (product ? getProductDetails(product) : null), [product]);
+  const details = useMemo(() => (product ? getProductDetails(product as any) : null), [product]);
 
   const images = product?.images?.length ? product.images : product ? [product.image] : [];
 
   const { data: relatedData } = useQuery({
-    queryKey: ['products', 'related', product?.category?.id || product?.category?.name || product?.categoryId],
-    queryFn: () => productsAPI.getProducts({ category: product?.categoryId || product?.category?.id, limit: 10 }),
+    queryKey: ['products', 'related', product?.categoryId ? String(product.categoryId) : product?.category?.id ? String(product.category.id) : product?.category?.name || ''],
+    queryFn: () => productsAPI.getProducts({ category: product?.categoryId ? String(product.categoryId) : product?.category?.id ? String(product.category.id) : undefined, limit: 10 }),
     enabled: !!(product?.categoryId || product?.category?.id)
   });
 
@@ -63,7 +63,7 @@ export default function ProductDetails() {
       category: { id: p.category, name: p.category }
     })), [product]);
 
-  const apiRelated = relatedData?.products?.filter((p: any) => String(p.id) !== String(product?.id)) || [];
+  const apiRelated = relatedData?.products?.filter((p: Product) => String(p.id) !== String(product?.id)) || [];
   const relatedProducts = [...apiRelated, ...mappedRelatedMocks].slice(0, 6);
 
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -80,7 +80,7 @@ export default function ProductDetails() {
   const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
     const fallbacks = [
-      product?.category ? (categoryImages as any)[product.category?.name || product.category?.id || (typeof product.category === 'string' ? product.category : '')] : undefined,
+      product?.category ? (categoryImages as Record<string, string>)[typeof product.category === 'object' ? (product.category.name || product.category.id || '') : product.category] : undefined,
       'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
       'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image',
     ].filter(Boolean) as string[];
@@ -152,7 +152,7 @@ export default function ProductDetails() {
         <nav className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground" aria-label="Breadcrumb">
           <Link to="/" className="hover:text-foreground">Home</Link>
           <ChevronRight className="h-4 w-4" />
-          <Link to="/" className="truncate hover:text-foreground">{product.category?.name || product.category}</Link>
+          <Link to="/" className="truncate hover:text-foreground">{typeof product.category === 'object' ? product.category?.name : product.category}</Link>
           <ChevronRight className="h-4 w-4" />
           <span className="truncate text-foreground font-medium">{product.name}</span>
         </nav>
@@ -182,7 +182,7 @@ export default function ProductDetails() {
           <div className="grid gap-4 lg:grid-cols-[80px_1fr]">
             {/* Thumbnails */}
             <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:flex-col lg:overflow-visible">
-              {images.map((src: string, idx: number) => (
+              {images.filter(Boolean).map((src: string | undefined, idx: number) => (
                 <button
                   key={`${product.id}-thumb-${idx}`}
                   type="button"
@@ -254,17 +254,17 @@ export default function ProductDetails() {
           {/* Title & Price */}
           <div>
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-              {product.category?.name || product.category}
+              {typeof product.category === 'object' ? product.category?.name : product.category}
             </div>
             <h1 className="text-2xl font-bold leading-tight tracking-tight">{product.name}</h1>
 
             <div className="flex items-center gap-3 mt-3">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-muted/80 px-3 py-1.5 text-sm">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                <span className="font-bold">{ratingSummary.avg.toFixed(1)}</span>
-                <span className="text-muted-foreground">({ratingSummary.total || product.reviews} reviews)</span>
+                <span className="font-bold">{(ratingSummary?.avg || 0).toFixed(1)}</span>
+                <span className="text-muted-foreground">({ratingSummary?.total || product.reviews || 0} reviews)</span>
               </div>
-              {product.quantity > 0 && (
+              {product.quantity !== undefined && product.quantity > 0 && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-600">
                   <Check className="h-3 w-3" />
                   In Stock
@@ -305,13 +305,13 @@ export default function ProductDetails() {
               </div>
               <button
                 type="button"
-                onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))}
+                onClick={() => setQuantity(q => Math.min(product.quantity || 0, q + 1))}
                 className="pk-btn pk-btn-outline h-10 w-10 p-0 flex items-center justify-center"
-                disabled={quantity >= product.quantity}
+                disabled={quantity >= (product.quantity || 0)}
               >
                 <Plus className="h-4 w-4" />
               </button>
-              {product.quantity < 10 && product.quantity > 0 && (
+              {(product.quantity || 0) < 10 && (product.quantity || 0) > 0 && (
                 <span className="text-xs text-orange-500 font-medium">Only {product.quantity} left</span>
               )}
             </div>
@@ -471,13 +471,13 @@ export default function ProductDetails() {
               <div className="rounded-2xl border bg-card/70 p-6 pk-glass">
                 <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                   <div className="text-center">
-                    <div className="text-5xl font-extrabold">{ratingSummary.avg.toFixed(1)}</div>
+                    <div className="text-5xl font-extrabold">{(ratingSummary?.avg || 0).toFixed(1)}</div>
                     <div className="flex items-center justify-center gap-1 mt-2">
                       {[1,2,3,4,5].map(s => (
-                        <Star key={s} className={cn('h-5 w-5', s <= Math.round(ratingSummary.avg) ? 'fill-amber-400 text-amber-400' : 'text-muted')} />
+                        <Star key={s} className={cn('h-5 w-5', s <= Math.round(ratingSummary?.avg || 0) ? 'fill-amber-400 text-amber-400' : 'text-muted')} />
                       ))}
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">{ratingSummary.total || product.reviews} reviews</div>
+                    <div className="text-sm text-muted-foreground mt-1">{ratingSummary?.total || product.reviews || 0} reviews</div>
                   </div>
                   <div className="flex-1 grid gap-2">
                     {[5,4,3,2,1].map((star) => {
@@ -569,7 +569,7 @@ export default function ProductDetails() {
       <div className="mt-8">
         <h2 className="text-2xl font-bold tracking-tight mb-6">More like this</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {relatedProducts.map((p: any) => (
+          {relatedProducts.map((p: Product) => (
             <Link
               key={p.id}
               to={`/product/${p.id}`}
@@ -578,7 +578,7 @@ export default function ProductDetails() {
               <div className="aspect-[4/3] overflow-hidden rounded-xl bg-muted mb-3">
                 <img src={p.images?.[0] || p.image} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               </div>
-              <div className="text-xs text-muted-foreground font-semibold mb-1">{p.category?.name || p.category}</div>
+              <div className="text-xs text-muted-foreground font-semibold mb-1">{typeof p.category === 'object' ? p.category?.name : p.category}</div>
               <div className="line-clamp-2 text-sm font-semibold leading-snug group-hover:text-primary">{p.name}</div>
               <div className="mt-2 flex items-center gap-1">
                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />

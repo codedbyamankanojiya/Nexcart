@@ -4,6 +4,7 @@ import { Check, Clock, Package, ShoppingBag, X, ChevronRight, MapPin, Truck, Pac
 import { formatPriceINR } from '../lib/format';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
+import type { ElementType } from 'react';
 
 // Mock orders data
 const mockOrders = [
@@ -97,7 +98,7 @@ function OrderTimeline({ status }: { status: string }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const map: Record<string, { label: string; className: string; icon: any }> = {
+    const map: Record<string, { label: string; className: string; icon: ElementType }> = {
         'delivered': { label: 'Delivered', className: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: PackageCheck },
         'shipped': { label: 'Shipped', className: 'bg-blue-100 text-blue-700 border-blue-200', icon: Truck },
         'processing': { label: 'Processing', className: 'bg-purple-100 text-purple-700 border-purple-200', icon: Package },

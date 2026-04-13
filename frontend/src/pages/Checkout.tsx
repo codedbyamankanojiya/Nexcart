@@ -8,9 +8,11 @@ import { CheckCircle2, ChevronRight, CreditCard, MapPin, ShieldCheck, Lock, Plus
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 
+import type { ElementType } from 'react';
+
 type Step = 'cart' | 'address' | 'delivery' | 'payment' | 'review';
 
-const STEPS: { id: Step; label: string; icon: any }[] = [
+const STEPS: { id: Step; label: string; icon: ElementType }[] = [
   { id: 'cart', label: 'Cart', icon: Tag },
   { id: 'address', label: 'Address', icon: MapPin },
   { id: 'delivery', label: 'Delivery', icon: Truck },

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Package, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Package, Search, SlidersHorizontal, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { categories, categoryImages, mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
@@ -8,21 +8,22 @@ import { categorySectionId } from '../lib/slug';
 import { scrollToId } from '../lib/scroll';
 import ProductCard from '../components/products/ProductCard';
 import { type SortBy, useCatalogStore } from '../stores/catalogStore';
-import { useCartStore } from '../stores/cartStore';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '../lib/products';
 import { cn } from '../lib/utils';
 
 // Particle Effect Component
 function Particles() {
-  const [particles] = useState<any[]>(() => [...Array(20)].map(() => ({
-    width: `${Math.random() * 6 + 2}px`,
-    height: `${Math.random() * 6 + 2}px`,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    animation: `pk-float ${Math.random() * 8 + 6}s ease-in-out infinite`,
-    animationDelay: `${Math.random() * 4}s`,
-  })));
+  const [particles] = useState(() => 
+    [...Array(20)].map(() => ({
+      width: `${Math.random() * 6 + 2}px`,
+      height: `${Math.random() * 6 + 2}px`,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      animation: `pk-float ${Math.random() * 8 + 6}s ease-in-out infinite`,
+      animationDelay: `${Math.random() * 4}s`,
+    }))
+  );
 
   return (
     <div className="overflow-hidden absolute inset-0 pointer-events-none">
@@ -173,9 +174,6 @@ export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const addToCart = useCartStore((s) => s.addProductToCart);
-
-
   const currentCategory = useCatalogStore((s) => s.currentCategory);
   const setCurrentCategory = useCatalogStore((s) => s.setCurrentCategory);
   const searchTerm = useCatalogStore((s) => s.searchTerm);
@@ -282,21 +280,21 @@ export default function Home() {
 
   const featuredProducts = useMemo(() => {
     return [...products]
-      .filter((p) => p.quantity > 0)
+      .filter((p) => (p.quantity || 0) > 0)
       .sort((a, b) => (b.averageRating || 0) + (b.reviewCount || 0) / 1000 - ((a.averageRating || 0) + (a.reviewCount || 0) / 1000))
       .slice(0, 8);
   }, [products]);
 
   const flashSaleProducts = useMemo(() => {
     return [...products]
-      .filter(p => p.quantity > 0 && p.comparePrice && p.comparePrice > p.price)
+      .filter(p => (p.quantity || 0) > 0 && p.comparePrice && p.comparePrice > p.price)
       .sort((a, b) => (b.comparePrice! - b.price) - (a.comparePrice! - a.price))
       .slice(0, 6);
   }, [products]);
 
   const newArrivals = useMemo(() => {
     return [...products]
-      .filter((p) => p.quantity > 0)
+      .filter((p) => (p.quantity || 0) > 0)
       .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
       .slice(0, 6);
   }, [products]);
@@ -328,7 +326,7 @@ export default function Home() {
               </div>
               <h1 className="mt-4 text-4xl font-bold tracking-tight pk-slide-up pk-delay-100 sm:text-5xl lg:text-6xl">
                 Discover <span className="text-transparent bg-clip-text bg-gradient-to-r via-sky-500 to-emerald-500 from-primary">tech</span>,<br />
-                fashion &amp; <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">lifestyle</span>.
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500">fashion</span> &amp; <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">lifestyle</span>.
               </h1>
               <p className="mx-auto mt-5 max-w-prose text-base pk-slide-up pk-delay-200 text-muted-foreground lg:mx-0">
                 Premium electronics, trendy fashion, and curated essentials.
@@ -389,7 +387,7 @@ export default function Home() {
                       className="flex items-center gap-3 rounded-xl border bg-card/80 p-3 text-left transition-all hover:scale-[1.02] hover:border-primary/30 active:scale-[0.98]"
                     >
                       <div className="overflow-hidden flex-shrink-0 w-12 h-12 rounded-lg bg-muted">
-                        <img src={p.images?.[0] || (p as any).image} alt={p.name} className="object-cover w-full h-full" />
+                        <img src={p.images?.[0] || p.image} alt={p.name} className="object-cover w-full h-full" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-semibold truncate">{p.name}</div>
@@ -615,44 +613,9 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {filteredSorted.map((product) => (
-                        <div key={product.id} className="p-3 rounded-2xl border shadow-sm transition-all bg-card/80 hover:border-primary/30 hover:shadow-lg pk-glass">
-                          <div className="flex gap-4">
-                            <div className="overflow-hidden flex-shrink-0 w-24 h-24 rounded-xl bg-muted">
-                              <img
-                                src={product.images?.[0] || (product as any).image}
-                                alt={product.name}
-                                className="object-cover w-full h-full transition-transform cursor-pointer hover:scale-105"
-                                onClick={() => navigate(`/product/${product.id}`)}
-                              />
-                            </div>
-                            <div className="flex flex-col flex-1 justify-between min-w-0">
-                              <div>
-                                <div className="text-xs font-semibold text-muted-foreground">{product.category?.name || String(product.category)}</div>
-                                <h4 className="mt-0.5 font-semibold line-clamp-2 cursor-pointer hover:text-primary" onClick={() => navigate(`/product/${product.id}`)}>
-                                  {product.name}
-                                </h4>
-                              </div>
-                              <div className="flex gap-1 items-center">
-                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                                <span className="text-xs font-semibold">{(product.averageRating || 0).toFixed(1)}</span>
-                                <span className="text-xs text-muted-foreground">({product.reviewCount || 0})</span>
-                              </div>
-                              <div className="flex justify-between items-center mt-1">
-                                <span className="text-sm font-bold text-primary">{formatPriceINR(product.price)}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => { addToCart(product); toast.success('Added to cart'); }}
-                                  className="px-3 h-8 text-xs pk-btn pk-btn-primary pk-btn-shine"
-                                >
-                                  <ShoppingCart className="h-3.5 w-3.5" />
-                                  Add
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <ProductCard key={product.id} product={product} />
                       ))}
                     </div>
                   </section>

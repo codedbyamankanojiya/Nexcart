@@ -66,16 +66,20 @@ export default function Cart() {
         }
     };
 
-    const handleRemoveItem = (productId: string, name: string) => {
-        removeFromCart(productId);
-        selectedItems.delete(productId);
-        setSelectedItems(new Set(selectedItems));
+    const handleRemoveItem = (cartItemId: string, name: string) => {
+        removeFromCart(cartItemId);
+        // We need to find which productId this cartItemId belongs to, to remove from selectedItems
+        const item = items.find(i => i.id === cartItemId);
+        if (item) {
+            selectedItems.delete(item.productId);
+            setSelectedItems(new Set(selectedItems));
+        }
         toast.success(`${name} removed from cart`);
     };
 
-    const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    const handleUpdateQuantity = (cartItemId: string, newQuantity: number) => {
         if (newQuantity < 1) return;
-        setQty(productId, newQuantity);
+        setQty(cartItemId, newQuantity);
     };
 
     if (items.length === 0) {
@@ -218,7 +222,7 @@ export default function Cart() {
                                             <div className="flex items-center gap-3">
                                                 <div className="flex items-center gap-1.5 rounded-xl border-2 bg-card/50 p-1">
                                                     <button
-                                                        onClick={() => handleUpdateQuantity(String(product.id), product.quantity - 1)}
+                                                        onClick={() => handleUpdateQuantity(String(product.cartItemId), product.quantity - 1)}
                                                         disabled={product.quantity <= 1}
                                                         className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
                                                         aria-label="Decrease quantity"
@@ -227,7 +231,7 @@ export default function Cart() {
                                                     </button>
                                                     <span className="w-10 text-center text-sm font-bold">{product.quantity}</span>
                                                     <button
-                                                        onClick={() => handleUpdateQuantity(String(product.id), product.quantity + 1)}
+                                                        onClick={() => handleUpdateQuantity(String(product.cartItemId), product.quantity + 1)}
                                                         disabled={product.quantity >= 5}
                                                         className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
                                                         aria-label="Increase quantity"
@@ -246,7 +250,7 @@ export default function Cart() {
                                     {/* Actions */}
                                     <div className="flex flex-col gap-2 items-end">
                                         <button
-                                            onClick={() => handleRemoveItem(String(product.id), product.name)}
+                                            onClick={() => handleRemoveItem(String(product.cartItemId), product.name)}
                                             className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all"
                                             aria-label="Remove item"
                                         >
