@@ -7,8 +7,10 @@ import { cn } from '../../lib/utils';
 import { useCartStore } from '../../stores/cartStore';
 import { categoryImages } from '../../data/mockProducts';
 
+import type { Product } from '../../lib/products';
+
 interface ProductCardProps {
-  product: any;
+  product: Product;
 }
 
 function ProductCard({ product }: ProductCardProps) {
@@ -26,19 +28,19 @@ function ProductCard({ product }: ProductCardProps) {
 
   // Badge logic
   const badge = (() => {
-    if (product.quantity === 0) return { text: 'Out of Stock', className: 'bg-destructive/90 text-destructive-foreground', icon: null };
+    if ((product.quantity || 0) === 0) return { text: 'Out of Stock', className: 'bg-destructive/90 text-destructive-foreground', icon: null };
     if ((product.averageRating || 0) >= 4.8 && (product.reviewCount || 0) >= 500)
       return { text: 'Best Seller', className: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white', icon: <Sparkles className="h-3 w-3" /> };
     if ((product.averageRating || 0) >= 4.5 && (product.reviewCount || 0) >= 100)
       return { text: 'Top Rated', className: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white', icon: <Star className="h-3 w-3" /> };
-    if ((product.comparePrice || 0) > product.price)
+    if (product.comparePrice !== undefined && product.comparePrice > product.price)
       return { text: `${Math.round((1 - product.price / product.comparePrice) * 100)}% OFF`, className: 'bg-gradient-to-r from-red-500 to-pink-500 text-white', icon: <Zap className="h-3 w-3" /> };
     return null;
   })();
 
   // Stock level
   const stockLevel = (() => {
-    if (product.quantity === 0) return { label: 'Out of Stock', color: 'text-destructive', bg: 'bg-destructive/10' };
+    if (!product.quantity || product.quantity === 0) return { label: 'Out of Stock', color: 'text-destructive', bg: 'bg-destructive/10' };
     if (product.quantity < 10) return { label: `Only ${product.quantity} left!`, color: 'text-orange-500', bg: 'bg-orange-500/10' };
     if (product.quantity < 20) return { label: 'Low stock', color: 'text-amber-500', bg: 'bg-amber-500/10' };
     return null;
@@ -46,8 +48,9 @@ function ProductCard({ product }: ProductCardProps) {
 
   const handleImageError = (e: SyntheticEvent<HTMLImageElement>) => {
     const target = e.currentTarget;
+    const catName = typeof product.category === 'object' ? product.category?.name : product.category;
     const fallbacks = [
-      (categoryImages as any)[product.category?.name || typeof product.category === 'string' ? product.category : ''],
+      (categoryImages as Record<string, string>)[catName || ''],
       'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=800&q=80',
       'https://via.placeholder.com/800x600/111827/ffffff?text=Product+Image',
     ].filter(Boolean) as string[];
@@ -179,8 +182,8 @@ function ProductCard({ product }: ProductCardProps) {
 
           {/* Hover Actions Overlay */}
           <div className={cn(
-            'absolute inset-0 z-20 flex items-center justify-center gap-3',
-            'opacity-0 translate-y-4 transition-all duration-300',
+            'absolute inset-0 z-20 hidden sm:flex items-center justify-center gap-3',
+            'opacity-0 translate-y-4 transition-all duration-300 bg-black/20',
             isHovered && 'opacity-100 translate-y-0'
           )}>
             <button
@@ -194,7 +197,7 @@ function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               onClick={handleAddToCart}
-              disabled={product.quantity === 0}
+              disabled={(product.quantity || 0) === 0}
               className="flex h-11 items-center justify-center gap-2 rounded-full bg-primary/95 backdrop-blur-md px-5 shadow-lg transition-all hover:scale-110 hover:bg-primary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ShoppingCart className="h-5 w-5 text-white" />
@@ -202,12 +205,7 @@ function ProductCard({ product }: ProductCardProps) {
             </button>
           </div>
 
-          {/* Rating Badge (bottom left) */}
-          <div className="absolute bottom-3 left-3 z-20 flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1.5 text-xs font-semibold text-white">
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            <span>{(product.averageRating || 0).toFixed(1)}</span>
-            <span className="opacity-70">({product.reviewCount || 0})</span>
-          </div>
+          {/* Rating Badge (bottom left) removed to avoid duplication */}
 
           {/* Trending Badge */}
           {product.featured && (
@@ -239,7 +237,7 @@ function ProductCard({ product }: ProductCardProps) {
         <div className="flex flex-col gap-2 p-4 sm:gap-3 sm:p-5">
           {/* Category */}
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {product.category?.name || product.category || 'Uncategorized'}
+            {typeof product.category === 'object' ? product.category?.name : product.category || 'Uncategorized'}
           </div>
 
           {/* Name */}
@@ -256,7 +254,7 @@ function ProductCard({ product }: ProductCardProps) {
               <span className="text-lg font-extrabold text-primary sm:text-xl">
                 {formatPriceINR(product.price)}
               </span>
-              {(product.comparePrice || 0) > product.price && (
+              {(product.comparePrice !== undefined && product.comparePrice > product.price) && (
                 <span className="text-xs text-muted-foreground line-through">
                   {formatPriceINR(product.comparePrice)}
                 </span>
@@ -280,17 +278,17 @@ function ProductCard({ product }: ProductCardProps) {
           {/* Add to Cart Button (Mobile visible) */}
           <button
             type="button"
-            disabled={product.quantity === 0}
+            disabled={(product.quantity || 0) === 0}
             onClick={handleAddToCart}
             className={cn(
               'pk-btn pk-btn-primary pk-btn-shine h-10 w-full text-xs font-semibold shadow-md transition-all duration-300',
               addAnimation ? 'scale-105 bg-emerald-500' : '',
-              product.quantity > 0 && 'hover:shadow-xl hover:shadow-primary/25',
+              (product.quantity || 0) > 0 && 'hover:shadow-xl hover:shadow-primary/25',
               'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:hidden'
             )}
           >
             <ShoppingCart className="h-4 w-4 sm:mr-2" />
-            {product.quantity === 0 ? 'Out of Stock' : addAnimation ? '✓ Added!' : 'Add to Cart'}
+            {(product.quantity || 0) === 0 ? 'Out of Stock' : addAnimation ? '✓ Added!' : 'Add to Cart'}
           </button>
         </div>
       </div>
@@ -328,7 +326,7 @@ function ProductCard({ product }: ProductCardProps) {
               <div className="flex flex-col gap-4 p-6">
                 <div>
                   <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {product.category?.name || product.category}
+                    {typeof product.category === 'object' ? product.category?.name : product.category}
                   </div>
                   <h3 className="mt-2 text-xl font-bold leading-tight">{product.name}</h3>
                 </div>
@@ -343,7 +341,7 @@ function ProductCard({ product }: ProductCardProps) {
 
                 <div className="flex items-baseline gap-3">
                   <span className="text-2xl font-extrabold text-primary">{formatPriceINR(product.price)}</span>
-                  {(product.comparePrice || 0) > product.price && (
+                  {(product.comparePrice !== undefined && product.comparePrice > product.price) && (
                     <span className="text-sm text-muted-foreground line-through">{formatPriceINR(product.comparePrice)}</span>
                   )}
                 </div>
@@ -355,7 +353,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <div className="flex gap-3 mt-auto">
                   <button
                     type="button"
-                    onClick={() => { handleAddToCart({ preventDefault: () => {} } as any); setIsQuickViewOpen(false); }}
+                    onClick={(e) => { handleAddToCart(e); setIsQuickViewOpen(false); }}
                     disabled={product.quantity === 0}
                     className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-12 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
                   >

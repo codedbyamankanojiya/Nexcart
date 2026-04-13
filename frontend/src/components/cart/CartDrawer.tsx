@@ -105,7 +105,7 @@ export default function CartDrawer({ open, onOpenChange }: { open: boolean; onOp
                   <div className="flex gap-3">
                     <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-muted">
                       <img
-                        src={item.product.images[0]}
+                        src={item.product.images?.[0]}
                         alt={item.product.name}
                         className="h-full w-full object-cover"
                         loading="lazy"

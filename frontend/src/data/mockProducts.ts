@@ -14,9 +14,9 @@ export const categoryImages: Record<Category, string> = {
   'Gaming Console':
     'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=2070&q=80',
   Television:
-    'https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=2070&q=80',
   'PC Accessories':
-    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=2067&q=80',
+    'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=2067&q=80',
   Gadgets:
     'https://images.unsplash.com/photo-1543512214-318c7553f230?auto=format&fit=crop&w=2021&q=80',
   Glasses:
@@ -45,7 +45,7 @@ const baseProducts: Product[] = [
     price: 124999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1610792516307-ea5c9fbaca49?auto=format&fit=crop&w=1000&q=80',
     description: '6.8-inch Dynamic AMOLED display, S Pen included, 200MP camera, AI features.',
     rating: 4.7,
     reviews: 1834,
@@ -93,7 +93,7 @@ const baseProducts: Product[] = [
     price: 99999.99,
     category: 'Smartphone',
     image:
-      'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1592899677974-e1e479a935fa?auto=format&fit=crop&w=1000&q=80',
     description: 'Pro camera system, bright LTPO display, flagship performance for creators and gamers.',
     rating: 4.6,
     reviews: 418,
@@ -555,7 +555,7 @@ const baseProducts: Product[] = [
     price: 6999.99,
     category: 'PC Accessories',
     image:
-      'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&w=1000&q=80',
     description: '1080p Full HD webcam with autofocus, dual stereo mics, perfect for streaming.',
     rating: 4.7,
     reviews: 3456,
