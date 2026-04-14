@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, User, ChevronDown, Zap, TrendingUp } from 'lucide-react';
+import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, User, ChevronDown, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { categorySectionId } from '../../lib/slug';
 import { scrollToId } from '../../lib/scroll';
@@ -134,27 +134,22 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 px-4 py-2 text-center text-xs font-semibold text-white">
-        <span className="inline-flex items-center gap-1">
-          <Zap className="h-3 w-3" />
-          FREE Shipping on orders above ₹999 | Use code: POPKART20 for 20% OFF
-        </span>
-      </div>
-
-      <header className="sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/85 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/75 shadow-sm shadow-black/5">
         <div className="pk-container flex h-[64px] items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" onClick={goHomeTop} className="flex items-center gap-2.5 group">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-sky-500 to-emerald-500 shadow-lg transition-transform group-hover:scale-110">
-              <span className="text-sm font-bold text-white">P</span>
-              <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse" />
+          <Link to="/" onClick={goHomeTop} className="flex items-center gap-3 group flex-shrink-0">
+            {/* Badge icon */}
+            <div className="relative flex h-10 w-10 items-center justify-center">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary via-sky-500 to-emerald-500 transition-all duration-500 group-hover:from-emerald-500 group-hover:via-sky-500 group-hover:to-primary" />
+              <div className="absolute inset-[2px] rounded-xl bg-background/90 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-sm font-black bg-gradient-to-br from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent leading-none">PK</span>
+              </div>
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/40 via-sky-500/30 to-emerald-500/40 blur-md opacity-0 group-hover:opacity-80 transition-opacity duration-500 -z-10" />
             </div>
-            <div className="flex items-baseline gap-0.5">
-              <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-primary via-sky-600 to-emerald-500 bg-clip-text text-transparent">
-                PopKart
-              </span>
-              <span className="text-lg font-bold text-primary">.</span>
+            {/* Wordmark */}
+            <div className="flex flex-col leading-none">
+              <span className="text-[18px] font-black tracking-tight bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">PopKart</span>
+              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.18em] -mt-0.5">Premium Store</span>
             </div>
           </Link>
 

@@ -909,6 +909,403 @@
     pointer-events: none;
   }
 
+  /* ═══════════════════════════════════════
+     PREMIUM PRODUCT CARD
+     ═══════════════════════════════════════ */
+
+  /* Animated gradient border ring on hover */
+  .pk-product-card {
+    position: relative;
+  }
+
+  .pk-product-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    z-index: 0;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0),
+      hsl(var(--brand-2) / 0),
+      hsl(var(--primary) / 0)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 500ms ease, background 500ms ease;
+    pointer-events: none;
+  }
+
+  .pk-product-card:hover::before {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.6) 0%,
+      hsl(var(--brand-2) / 0.4) 50%,
+      hsl(var(--brand-4) / 0.5) 100%
+    );
+    opacity: 1;
+    animation: pk-border-spin 3s linear infinite;
+  }
+
+  @keyframes pk-border-spin {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Img 108% scale utility */
+  .group:hover .group-hover\:scale-108 {
+    transform: scale(1.08);
+  }
+  .group-hover\:scale-108 {
+    transition: transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Card shine sweep on hover */
+  .pk-product-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    background-position: 200% 0;
+    pointer-events: none;
+    transition: background-position 600ms ease;
+  }
+
+  .pk-product-card:hover::after {
+    background-position: -100% 0;
+  }
+
+  /* Hover scale 115 utility */
+  .hover\:scale-115:hover {
+    transform: scale(1.15);
+  }
+
+  /* ═══════════════════════════════════════
+     SECTION DIVIDERS & ACCENTS  
+     ═══════════════════════════════════════ */
+
+  /* Horizontal gradient line */
+  .pk-section-line {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      hsl(var(--primary) / 0.4),
+      hsl(var(--brand-2) / 0.3),
+      transparent
+    );
+  }
+
+  /* Ambient orb blobs for section backgrounds */
+  .pk-featured-bg {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .pk-featured-bg::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(
+      circle,
+      hsl(var(--primary) / 0.08) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+    animation: pk-orb-drift 14s ease-in-out infinite alternate;
+  }
+
+  .pk-featured-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+      circle,
+      hsl(var(--brand-4) / 0.07) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+    animation: pk-orb-drift 18s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes pk-orb-drift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    33%  { transform: translate3d(30px, -20px, 0) scale(1.08); }
+    66%  { transform: translate3d(-20px, 30px, 0) scale(0.96); }
+    100% { transform: translate3d(10px, 10px, 0) scale(1.04); }
+  }
+
+  /* Shop section glass panel */
+  .pk-shop-filter-glass {
+    background: hsl(var(--card) / 0.35);
+    backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow:
+      0 8px 32px -8px hsl(0 0% 0% / 0.15),
+      inset 0 1px 0 hsl(var(--background) / 0.5);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PROFESSIONAL PRODUCT CARD SYSTEM
+     Cards are transparent glass containers that let the
+     cinematic section backgrounds breathe through them.
+     ═══════════════════════════════════════════════════ */
+
+  /* ── Base card shell ─────────────────────────────── */
+  .pk-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;          /* 24px — softer than sharp corners */
+    border: 1px solid hsl(var(--border) / 0.25);
+
+    /* Transparent glass — reveals background behind it */
+    background: hsl(var(--card) / 0.38);
+    backdrop-filter: blur(16px) saturate(1.5) brightness(1.02);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5) brightness(1.02);
+
+    /* Subtle inner highlight — top edge */
+    box-shadow:
+      0 0 0 0 transparent,
+      0 8px 24px -4px hsl(0 0% 0% / 0.12),
+      inset 0 1px 0 hsl(255 100% 100% / 0.08);
+
+    transition:
+      transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 450ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      border-color 350ms ease,
+      background 350ms ease;
+    will-change: transform;
+  }
+
+  .pk-card:hover {
+    transform: translateY(-6px) scale(1.012);
+    background: hsl(var(--card) / 0.55);
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.12),
+      0 20px 50px -8px hsl(0 0% 0% / 0.22),
+      0 0 40px -12px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 hsl(255 100% 100% / 0.14);
+  }
+
+  .pk-card:active {
+    transform: translateY(-2px) scale(1.005);
+  }
+
+  /* ── Animated gradient border ring ───────────────── */
+  .pk-card-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.5) 0%,
+      hsl(var(--brand-4) / 0.35) 35%,
+      hsl(var(--brand-2) / 0.4) 65%,
+      hsl(var(--primary) / 0.5) 100%
+    );
+    background-size: 300% 300%;
+    /* Clip to border only */
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1px;
+  }
+
+  .pk-card-ring--active {
+    opacity: 1;
+    animation: pk-ring-rotate 3s linear infinite;
+  }
+
+  @keyframes pk-ring-rotate {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ── Cinematic image gradient overlays ──────────── */
+  .pk-card-img-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      hsl(0 0% 0% / 0.72) 0%,
+      hsl(0 0% 0% / 0.18) 45%,
+      transparent 70%
+    );
+    transition: opacity 350ms ease;
+  }
+
+  .pk-card-img-sides {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      hsl(0 0% 0% / 0.18) 0%,
+      transparent 25%,
+      transparent 75%,
+      hsl(0 0% 0% / 0.12) 100%
+    );
+  }
+
+  /* ── Info zone — frosted glass panel ────────────── */
+  .pk-card-info {
+    position: relative;
+    padding: 0.875rem 1rem 1rem;
+
+    /* Frosted glass bottom panel */
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--card) / 0.05) 0%,
+      hsl(var(--card) / 0.75) 20%,
+      hsl(var(--card) / 0.88) 100%
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  @media (min-width: 640px) {
+    .pk-card-info {
+      padding: 1rem 1.125rem 1.125rem;
+    }
+  }
+
+  /* Dark mode card adjustments */
+  .dark .pk-card {
+    background: hsl(var(--card) / 0.30);
+    border-color: hsl(var(--border) / 0.35);
+    box-shadow:
+      0 8px 24px -4px hsl(0 0% 0% / 0.35),
+      inset 0 1px 0 hsl(255 100% 100% / 0.05);
+  }
+
+  .dark .pk-card:hover {
+    background: hsl(var(--card) / 0.50);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.2),
+      0 20px 50px -8px hsl(0 0% 0% / 0.45),
+      0 0 60px -15px hsl(var(--primary) / 0.25),
+      inset 0 1px 0 hsl(255 100% 100% / 0.08);
+  }
+
+  .dark .pk-card-info {
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--card) / 0.02) 0%,
+      hsl(var(--card) / 0.82) 22%,
+      hsl(var(--card) / 0.94) 100%
+    );
+  }
+
+  /* ── Section product grid container ─────────────── */
+  .pk-product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .pk-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 768px) {
+    .pk-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1024px) {
+    .pk-product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1280px) {
+    .pk-product-grid-wider { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  }
+
+  /* ── Featured section — rich depth bg ───────────── */
+  .pk-section-featured {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .pk-section-featured::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(900px 700px at 85% 20%, hsl(var(--primary) / 0.07) 0%, transparent 65%),
+      radial-gradient(700px 600px at 10% 80%, hsl(var(--brand-4) / 0.06) 0%, transparent 65%),
+      radial-gradient(500px 400px at 50% 50%, hsl(var(--brand-2) / 0.04) 0%, transparent 65%);
+    animation: pk-orb-drift 18s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Shop grid — tech texture */
+  .pk-section-shop {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .pk-section-shop::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-image:
+      url('https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=2400&q=40');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.055;
+    filter: saturate(0.8) contrast(1.1);
+    animation: pk-hero-drift 24s ease-in-out infinite alternate;
+  }
+
+  .pk-section-shop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--background) / 0.96) 0%,
+      hsl(var(--background) / 0.80) 40%,
+      hsl(var(--background) / 0.88) 70%,
+      hsl(var(--background) / 0.97) 100%
+    );
+    pointer-events: none;
+  }
+
   /* Glow Effects */
   .pk-glow {
     box-shadow:
