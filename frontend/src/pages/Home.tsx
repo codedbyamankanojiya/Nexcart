@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Package, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Search, SlidersHorizontal, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { categories, categoryImages, mockProducts } from '../data/mockProducts';
 import { formatPriceINR } from '../lib/format';
@@ -11,29 +11,67 @@ import { type SortBy, useCatalogStore } from '../stores/catalogStore';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '../lib/products';
 import { cn } from '../lib/utils';
+import { CinematicBg } from '../components/ui/CinematicBg';
+import { FloatingProducts, ScrollReveal } from '../components/ui/Showcase';
 
-// Particle Effect Component
-function Particles() {
-  const [particles] = useState(() => 
-    [...Array(20)].map(() => ({
-      width: `${Math.random() * 6 + 2}px`,
-      height: `${Math.random() * 6 + 2}px`,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animation: `pk-float ${Math.random() * 8 + 6}s ease-in-out infinite`,
-      animationDelay: `${Math.random() * 4}s`,
-    }))
-  );
+// Marquee product images
+const MARQUEE_ROW1 = [
+  { url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=300&q=70', label: 'iPhone 15 Pro' },
+  { url: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=300&q=70', label: 'PlayStation 5' },
+  { url: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=300&q=70', label: 'MacBook Pro M3' },
+  { url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=300&q=70', label: 'Nike Sneakers' },
+  { url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=300&q=70', label: "Women's Fashion" },
+  { url: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=300&q=70', label: 'Apple Watch' },
+  { url: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=300&q=70', label: 'RTX 4090' },
+  { url: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=300&q=70', label: 'MX Master 3S' },
+];
 
+const MARQUEE_ROW2 = [
+  { url: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=300&q=70', label: 'Ray-Ban' },
+  { url: 'https://images.unsplash.com/photo-1610792516307-ea5c9fbaca49?auto=format&fit=crop&w=300&q=70', label: 'Galaxy S24 Ultra' },
+  { url: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=300&q=70', label: 'ROG Gaming' },
+  { url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=70', label: 'Luxury Bag' },
+  { url: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=300&q=70', label: 'Nintendo Switch' },
+  { url: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=300&q=70', label: 'AirPods Pro' },
+  { url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=300&q=70', label: "Men's Wear" },
+  { url: 'https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?auto=format&fit=crop&w=300&q=70', label: 'Samsung QLED TV' },
+];
+
+function MarqueeItem({ item, i }: { item: typeof MARQUEE_ROW1[0]; i: number }) {
   return (
-    <div className="overflow-hidden absolute inset-0 pointer-events-none">
-      {particles.map((style, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full bg-primary/20"
-          style={style}
-        />
-      ))}
+    <div
+      key={i}
+      className="shrink-0 overflow-hidden rounded-2xl border border-border/30 shadow-lg w-28 h-20 sm:w-36 sm:h-24 relative group"
+    >
+      <img
+        src={item.url}
+        alt={item.label}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-cover transition duration-700 group-hover:scale-110 brightness-90"
+      />
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 py-1.5">
+        <div className="text-[10px] font-semibold text-white/90 truncate">{item.label}</div>
+      </div>
+    </div>
+  );
+}
+
+function MarqueeStrip() {
+  const row1 = [...MARQUEE_ROW1, ...MARQUEE_ROW1];
+  const row2 = [...MARQUEE_ROW2, ...MARQUEE_ROW2];
+  return (
+    <div className="py-6 overflow-hidden border-y border-border/20 bg-background/50 backdrop-blur-sm">
+      <div className="pk-film-strip mb-2.5">
+        <div className="pk-film-strip-track">
+          {row1.map((item, i) => <MarqueeItem key={i} item={item} i={i} />)}
+        </div>
+      </div>
+      <div className="pk-film-strip">
+        <div className="pk-film-strip-track-reverse">
+          {row2.map((item, i) => <MarqueeItem key={i} item={item} i={i} />)}
+        </div>
+      </div>
     </div>
   );
 }
@@ -72,21 +110,6 @@ function FlashSaleTimer() {
           {i < 2 && <span className="text-lg font-bold text-orange-500">:</span>}
         </div>
       ))}
-    </div>
-  );
-}
-
-// Brand Trust Badge
-function TrustBadge({ icon: Icon, title, subtitle }: { icon: any; title: string; subtitle: string }) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl bg-card/80 border p-4 transition-all hover:scale-[1.02] hover:shadow-md">
-      <div className="flex justify-center items-center w-12 h-12 bg-gradient-to-br rounded-xl from-primary/15 to-sky-500/15">
-        <Icon className="w-6 h-6 text-primary" />
-      </div>
-      <div>
-        <div className="text-sm font-bold">{title}</div>
-        <div className="text-xs text-muted-foreground">{subtitle}</div>
-      </div>
     </div>
   );
 }
@@ -306,118 +329,157 @@ export default function Home() {
   return (
     <div className="pb-16">
       {/* ═══════════════════════════════════════════
-          HERO SECTION
+          CINEMATIC HERO SECTION
           ═══════════════════════════════════════════ */}
-      <section className="overflow-hidden relative border-b pk-hero-bg pk-particles pk-grid">
-        <Particles />
-        <div className="absolute inset-0">
-          <div className="absolute -top-20 -left-40 w-96 h-96 bg-gradient-to-br to-transparent rounded-full blur-3xl from-primary/20 via-sky-500/15 pk-float" />
-          <div className="absolute -top-20 -right-32 w-80 h-80 bg-gradient-to-br to-transparent rounded-full blur-3xl from-emerald-500/15 via-teal-500/10 pk-float pk-float-slow" />
-          <div className="absolute bottom-[-140px] left-1/2 h-80 w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-purple-500/15 blur-3xl pk-float pk-float-fast" />
+      <section className="overflow-hidden relative pk-hero-bg pk-grid" style={{ minHeight: '88vh' }}>
+        {/* Cinematic Slideshow Background */}
+        <CinematicBg overlay="dark" interval={7000} />
+
+        {/* Particles overlay */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          <div className="absolute -top-20 -left-40 w-96 h-96 bg-gradient-to-br to-transparent rounded-full blur-3xl from-primary/15 via-sky-500/10 pk-float" />
+          <div className="absolute -top-20 -right-32 w-80 h-80 bg-gradient-to-br to-transparent rounded-full blur-3xl from-emerald-500/10 via-teal-500/8 pk-float pk-float-slow" />
+          <div className="absolute bottom-[-100px] left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-sky-500/10 via-blue-500/8 to-purple-500/10 blur-3xl pk-float pk-float-fast" />
         </div>
 
-        <div className="relative py-16 pk-container md:py-24">
-          <div className="grid gap-10 items-center lg:grid-cols-2">
-            {/* Left Content */}
-            <div className="text-center lg:text-left">
-              <div className="inline-flex gap-2 items-center px-4 py-2 text-sm font-semibold rounded-full bg-primary/10 text-primary pk-slide-up">
-                <Zap className="w-4 h-4" />
-                India’s #1 Modern Megastore
-              </div>
-              <h1 className="mt-4 text-4xl font-bold tracking-tight pk-slide-up pk-delay-100 sm:text-5xl lg:text-6xl">
-                Discover <span className="text-transparent bg-clip-text bg-gradient-to-r via-sky-500 to-emerald-500 from-primary">tech</span>,<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500">fashion</span> &amp; <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">lifestyle</span>.
-              </h1>
-              <p className="mx-auto mt-5 max-w-prose text-base pk-slide-up pk-delay-200 text-muted-foreground lg:mx-0">
-                Premium electronics, trendy fashion, and curated essentials.
-                Enjoy seamless browsing, blazing fast checkout, and a stunning dark mode experience.
-              </p>
-              <div className="flex flex-col gap-4 mt-8 pk-slide-up pk-delay-300 sm:flex-row sm:justify-center lg:justify-start">
-                <button
-                  type="button"
-                  onClick={() => scrollToId('shop')}
-                  className="px-8 h-12 text-base font-bold shadow-xl pk-btn pk-btn-primary pk-btn-shine hover:shadow-2xl hover:shadow-primary/30"
-                >
-                  <Zap className="w-5 h-5" />
-                  Shop Now
-                </button>
-                <button
-                  type="button"
-                  onClick={() => scrollToId('categories')}
-                  className="px-6 h-12 text-base font-semibold pk-btn pk-btn-outline hover:bg-accent/80"
-                >
-                  Explore Categories
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+        {/* Floating product showcase — decorative */}
+        <div className="absolute inset-0 z-10 hidden xl:block">
+          <FloatingProducts />
+        </div>
 
-            {/* Right - Quick Stats */}
-            <div className="relative">
-              <div className="p-6 rounded-3xl border shadow-2xl backdrop-blur-xl bg-card/80 pk-glass pk-slide-up pk-delay-200">
-                {/* Flash Sale Timer */}
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex gap-2 items-center">
-                    <Flame className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg font-bold">Flash Sale</span>
-                  </div>
-                  <FlashSaleTimer />
+        {/* Announcement stripe */}
+        <div className="absolute inset-x-0 top-0 z-20 py-1 text-center text-xs font-semibold text-white/90 bg-gradient-to-r from-primary/80 via-sky-500/80 to-emerald-500/80 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <Zap className="w-3 h-3" />
+            NEW: Flash Sale Live — Up to 70% OFF on Premium Tech!
+          </span>
+        </div>
+
+        {/* Hero content */}
+        <div className="relative z-20 flex items-center" style={{ minHeight: '88vh' }}>
+          <div className="pk-container py-24">
+            <div className="grid gap-12 items-center lg:grid-cols-2 xl:grid-cols-[1fr_520px]">
+              {/* Left Content */}
+              <div className="text-center lg:text-left">
+                <div className="inline-flex gap-2 items-center px-4 py-2 text-sm font-semibold rounded-full bg-primary/15 text-primary backdrop-blur-sm border border-primary/20 pk-slide-up">
+                  <Zap className="w-4 h-4" />
+                  India's #1 Modern Megastore
                 </div>
+                <h1 className="mt-5 text-4xl font-bold tracking-tight pk-slide-up pk-delay-100 sm:text-5xl lg:text-6xl xl:text-7xl">
+                  Discover{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r via-sky-400 to-emerald-400 from-primary">
+                    tech
+                  </span>
+                  ,{' '}
+                  <br className="hidden lg:block" />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400">
+                    fashion
+                  </span>{' '}
+                  &amp;{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-red-400">
+                    lifestyle
+                  </span>.
+                </h1>
+                <p className="mx-auto mt-5 max-w-prose text-base pk-slide-up pk-delay-200 text-muted-foreground/90 lg:mx-0">
+                  Premium electronics, trendy fashion, and curated essentials.
+                  Enjoy seamless browsing, cinematic browsing, and blazing fast checkout.
+                </p>
 
-                <div className="grid grid-cols-3 gap-4">
+                {/* Stats row */}
+                <div className="flex flex-wrap gap-6 mt-8 justify-center lg:justify-start pk-slide-up pk-delay-300">
                   {[
-                    { icon: Truck, label: 'Free Shipping', sub: 'On ₹999+' },
-                    { icon: Shield, label: 'Secure Pay', sub: '256-bit SSL' },
-                    { icon: BadgeCheck, label: 'Easy Returns', sub: '7 Days' },
-                  ].map((item) => (
-                    <div key={item.label} className="flex flex-col gap-2 items-center p-4 text-center rounded-2xl bg-muted/50">
-                      <item.icon className="w-6 h-6 text-primary" />
-                      <div className="text-xs font-semibold">{item.label}</div>
-                      <div className="text-[10px] text-muted-foreground">{item.sub}</div>
+                    { value: '50K+', label: 'Products' },
+                    { value: '4.9★', label: 'Avg Rating' },
+                    { value: '2M+', label: 'Happy Buyers' },
+                  ].map((s) => (
+                    <div key={s.label} className="text-center">
+                      <div className="text-2xl font-extrabold pk-gradient-text">{s.value}</div>
+                      <div className="text-xs text-muted-foreground font-medium">{s.label}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-6">
-                  {flashSaleProducts.slice(0, 4).map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => navigate(`/product/${p.id}`)}
-                      className="flex items-center gap-3 rounded-xl border bg-card/80 p-3 text-left transition-all hover:scale-[1.02] hover:border-primary/30 active:scale-[0.98]"
-                    >
-                      <div className="overflow-hidden flex-shrink-0 w-12 h-12 rounded-lg bg-muted">
-                        <img src={p.images?.[0] || p.image} alt={p.name} className="object-cover w-full h-full" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-semibold truncate">{p.name}</div>
-                        <div className="text-sm font-bold text-primary">{formatPriceINR(p.price)}</div>
-                        {p.comparePrice && (
-                          <div className="text-[10px] text-muted-foreground line-through">{formatPriceINR(p.comparePrice)}</div>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                <div className="flex flex-col gap-4 mt-8 pk-slide-up pk-delay-400 sm:flex-row sm:justify-center lg:justify-start">
+                  <button
+                    type="button"
+                    onClick={() => scrollToId('shop')}
+                    className="px-8 h-13 text-base font-bold shadow-xl pk-btn pk-btn-primary pk-btn-shine pk-btn-liquid hover:shadow-2xl hover:shadow-primary/30"
+                    style={{ height: '52px' }}
+                  >
+                    <Zap className="w-5 h-5" />
+                    Shop Now
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollToId('categories')}
+                    className="px-6 h-13 text-base font-semibold pk-btn pk-btn-outline hover:bg-accent/80 backdrop-blur-sm"
+                    style={{ height: '52px' }}
+                  >
+                    Explore Categories
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
+
+              {/* Right — Flash Sale Card */}
+              <ScrollReveal direction="right" delay={200}>
+                <div className="p-6 rounded-3xl border shadow-2xl backdrop-blur-xl bg-card/70 pk-glass">
+                  {/* Flash Sale Timer */}
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="flex gap-2 items-center">
+                      <Flame className="w-6 h-6 text-orange-500" />
+                      <span className="text-lg font-bold">Flash Sale</span>
+                    </div>
+                    <FlashSaleTimer />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { icon: Truck, label: 'Free Shipping', sub: 'On ₹999+' },
+                      { icon: Shield, label: 'Secure Pay', sub: '256-bit SSL' },
+                      { icon: BadgeCheck, label: 'Easy Returns', sub: '7 Days' },
+                    ].map((item) => (
+                      <div key={item.label} className="flex flex-col gap-2 items-center p-4 text-center rounded-2xl bg-muted/50">
+                        <item.icon className="w-6 h-6 text-primary" />
+                        <div className="text-xs font-semibold">{item.label}</div>
+                        <div className="text-[10px] text-muted-foreground">{item.sub}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mt-6">
+                    {flashSaleProducts.slice(0, 4).map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => navigate(`/product/${p.id}`)}
+                        className="flex items-center gap-3 rounded-xl border bg-card/80 p-3 text-left transition-all hover:scale-[1.02] hover:border-primary/30 active:scale-[0.98] group"
+                      >
+                        <div className="overflow-hidden flex-shrink-0 w-12 h-12 rounded-lg bg-muted">
+                          <img src={p.images?.[0] || p.image} alt={p.name} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold truncate">{p.name}</div>
+                          <div className="text-sm font-bold text-primary">{formatPriceINR(p.price)}</div>
+                          {p.comparePrice && (
+                            <div className="text-[10px] text-muted-foreground line-through">{formatPriceINR(p.comparePrice)}</div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          TRUST BADGES
+          ANIMATED PRODUCT MARQUEE
           ═══════════════════════════════════════════ */}
-      <section className="border-b bg-muted/30">
-        <div className="py-6 pk-container">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <TrustBadge icon={Truck} title="Free Shipping" subtitle="On orders ₹999+" />
-            <TrustBadge icon={Shield} title="Secure Payment" subtitle="256-bit encryption" />
-            <TrustBadge icon={Package} title="Easy Returns" subtitle="7-day return policy" />
-            <TrustBadge icon={BadgeCheck} title="Quality Assured" subtitle="Verified products" />
-          </div>
-        </div>
-      </section>
+      <MarqueeStrip />
+
 
       {/* ═══════════════════════════════════════════
           FLASH SALE CAROUSEL
@@ -435,28 +497,32 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <section className="border-b pk-aurora pk-noise">
         <div className="py-12 pk-container">
-          <div className="flex gap-4 justify-between items-end mb-8">
-            <div>
-              <div className="inline-flex gap-2 items-center px-3 py-1 mb-3 text-xs font-semibold rounded-full bg-primary/10 text-primary">
-                <Star className="w-3 h-3 fill-current" />
-                Editor's Choice
+          <ScrollReveal>
+            <div className="flex gap-4 justify-between items-end mb-8">
+              <div>
+                <div className="inline-flex gap-2 items-center px-3 py-1 mb-3 text-xs font-semibold rounded-full bg-primary/10 text-primary">
+                  <Star className="w-3 h-3 fill-current" />
+                  Editor's Choice
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight">Featured Picks</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Top rated items loved by customers</p>
               </div>
-              <h2 className="text-2xl font-bold tracking-tight">Featured Picks</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Top rated items loved by customers</p>
+              <button
+                type="button"
+                onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
+                className="px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine"
+              >
+                View All
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
-              className="px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine"
-            >
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {featuredProducts.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {featuredProducts.slice(0, 8).map((product, idx) => (
+              <ScrollReveal key={product.id} delay={idx * 60} direction="up">
+                <ProductCard product={product} />
+              </ScrollReveal>
             ))}
           </div>
         </div>

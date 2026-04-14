@@ -109,11 +109,12 @@ function ProductCard({ product }: ProductCardProps) {
       <div
         ref={cardRef}
         className={cn(
-          'group relative overflow-hidden rounded-3xl border bg-card/95 shadow-md backdrop-blur-sm',
+          'group relative overflow-hidden rounded-3xl shadow-md',
+          'border border-white/10 bg-card/50 backdrop-blur-md',
           'transition-all duration-500 ease-out',
-          'hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/25',
+          'hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/30 hover:bg-card/65',
           'active:translate-y-0',
-          isHovered && 'border-primary/30 shadow-primary/20'
+          isHovered && 'border-primary/25 shadow-primary/20'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -234,7 +235,7 @@ function ProductCard({ product }: ProductCardProps) {
         </button>
 
         {/* Product Info */}
-        <div className="flex flex-col gap-2 p-4 sm:gap-3 sm:p-5">
+        <div className="flex flex-col gap-2 p-4 sm:gap-3 sm:p-5 bg-gradient-to-t from-card/80 to-transparent backdrop-blur-sm">
           {/* Category */}
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {typeof product.category === 'object' ? product.category?.name : product.category || 'Uncategorized'}
