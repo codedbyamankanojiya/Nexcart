@@ -15,6 +15,8 @@ import Checkout from './pages/Checkout';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import SellerProducts from './pages/seller/SellerProducts';
 import ProductForm from './pages/seller/ProductForm';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 
 function RequireAuth({ children }: { children: React.ReactElement }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -44,6 +46,8 @@ const router = createBrowserRouter([
       { path: 'cart', element: <Cart /> },
       { path: 'checkout', element: <RequireAuth><Checkout /></RequireAuth> },
       { path: 'orders', element: <RequireAuth><Orders /></RequireAuth> },
+      { path: 'settings', element: <RequireAuth><Settings /></RequireAuth> },
+      { path: 'profile', element: <RequireAuth><Profile /></RequireAuth> },
       { path: 'seller/dashboard', element: <RequireSeller><SellerDashboard /></RequireSeller> },
       { path: 'seller/products', element: <RequireSeller><SellerProducts /></RequireSeller> },
       { path: 'seller/products/new', element: <RequireSeller><ProductForm /></RequireSeller> },

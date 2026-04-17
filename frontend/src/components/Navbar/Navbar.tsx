@@ -1,5 +1,6 @@
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, User, ChevronDown, TrendingUp } from 'lucide-react';
+import { Heart, Menu, Moon, Search, ShoppingCart, Sun, X, Home, Package, Grid3x3, User, ChevronDown, TrendingUp, ArrowRight } from 'lucide-react';
+import { formatPriceINR } from '../../lib/format';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { categorySectionId } from '../../lib/slug';
 import { scrollToId } from '../../lib/scroll';
@@ -137,20 +138,12 @@ export default function Navbar() {
       <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/85 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/75 shadow-sm shadow-black/5">
         <div className="pk-container flex h-[64px] items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" onClick={goHomeTop} className="flex items-center gap-3 group flex-shrink-0">
-            {/* Badge icon */}
-            <div className="relative flex h-10 w-10 items-center justify-center">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary via-sky-500 to-emerald-500 transition-all duration-500 group-hover:from-emerald-500 group-hover:via-sky-500 group-hover:to-primary" />
-              <div className="absolute inset-[2px] rounded-xl bg-background/90 backdrop-blur-sm flex items-center justify-center">
-                <span className="text-sm font-black bg-gradient-to-br from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent leading-none">PK</span>
-              </div>
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/40 via-sky-500/30 to-emerald-500/40 blur-md opacity-0 group-hover:opacity-80 transition-opacity duration-500 -z-10" />
-            </div>
-            {/* Wordmark */}
-            <div className="flex flex-col leading-none">
-              <span className="text-[18px] font-black tracking-tight bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">PopKart</span>
-              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.18em] -mt-0.5">Premium Store</span>
-            </div>
+          <Link to="/" onClick={goHomeTop} className="flex items-center group flex-shrink-0">
+            <img 
+              src="/Logo.png" 
+              alt="PopKart"
+              className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -270,9 +263,9 @@ export default function Navbar() {
 
               {/* Search Results Dropdown */}
               {showResults && searchResults.length > 0 && (
-                <div className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-2xl border bg-popover shadow-2xl z-50">
+                <div className="absolute left-0 top-full mt-3 w-full overflow-hidden rounded-2xl pk-glass-panel z-50 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <div className="px-3 py-2 text-[10px] font-black text-primary/70 uppercase tracking-[0.2em]">
                       Search Suggestions
                     </div>
                     {searchResults.map((product) => (
@@ -283,25 +276,27 @@ export default function Navbar() {
                           closeAll();
                           navigate(`/product/${product.id}`);
                         }}
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all hover:bg-accent"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-all hover:bg-primary/10 hover:translate-x-1 group"
                       >
-                        <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
-                          <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                        <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-muted/50 ring-1 ring-white/10 group-hover:ring-primary/20">
+                          <img src={product.image} alt={product.name} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-medium">{product.name}</div>
-                          <div className="text-xs text-muted-foreground">{product.category}</div>
+                          <div className="truncate text-sm font-bold group-hover:text-primary transition-colors">{product.name}</div>
+                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{typeof product.category === 'object' ? product.category?.name : product.category}</div>
                         </div>
-                        <div className="text-sm font-semibold text-primary">₹{product.price.toLocaleString()}</div>
+                        <div className="text-sm font-black text-primary">{formatPriceINR(product.price)}</div>
                       </button>
                     ))}
-                    <button
-                      type="button"
-                      onClick={submitSearch}
-                      className="mt-2 w-full rounded-xl bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/20"
-                    >
-                      See all results for "{localSearch}"
-                    </button>
+                    <div className="border-t border-white/10 mt-2 p-2">
+                      <button
+                        type="button"
+                        onClick={submitSearch}
+                        className="mt-1 w-full rounded-xl bg-primary/10 px-3 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/20"
+                      >
+                        See all results for "{localSearch}"
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -309,22 +304,22 @@ export default function Navbar() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1.5">
-            {/* Wishlist */}
+          <div className="flex items-center gap-1">
+            {/* Wishlist - hidden on small mobile, visible md+ */}
             <button
               type="button"
               onClick={() => { navigate('/wishlist'); closeAll(); }}
-              className="pk-btn pk-btn-outline relative h-10 w-10 shrink-0 hover:bg-accent/70"
+              className="pk-btn pk-btn-outline relative h-9 w-9 md:h-10 md:w-10 shrink-0 hover:bg-accent/70 hidden md:flex"
               aria-label="Open wishlist"
             >
               <Heart className="h-4 w-4" />
             </button>
 
-            {/* Cart */}
+            {/* Cart - hidden on small mobile, visible md+ */}
             <button
               type="button"
               onClick={() => { navigate('/cart'); closeAll(); }}
-              className="pk-btn pk-btn-outline relative h-10 w-10 shrink-0 hover:bg-accent/70"
+              className="pk-btn pk-btn-outline relative h-9 w-9 md:h-10 md:w-10 shrink-0 hover:bg-accent/70 hidden md:flex"
               aria-label="Open cart"
             >
               <ShoppingCart className="h-4 w-4" />
@@ -335,11 +330,11 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Theme Toggle */}
+            {/* Theme Toggle - hidden on small mobile */}
             <button
               type="button"
               onClick={toggleTheme}
-              className="pk-btn pk-btn-outline h-10 w-10 shrink-0 hover:bg-accent/70"
+              className="pk-btn pk-btn-outline h-9 w-9 md:h-10 md:w-10 shrink-0 hover:bg-accent/70 hidden md:flex"
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -375,6 +370,9 @@ export default function Navbar() {
                       <button onClick={() => { navigate('/wishlist'); closeAll(); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-accent">
                         <Heart className="h-4 w-4" /> Wishlist
                       </button>
+                      <button onClick={() => { navigate('/settings'); closeAll(); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-accent">
+                        <Grid3x3 className="h-4 w-4" /> Settings
+                      </button>
                       {user?.role === 'SELLER' && (
                         <button onClick={() => { navigate('/seller/dashboard'); closeAll(); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10">
                           <TrendingUp className="h-4 w-4" /> Seller Dashboard
@@ -408,10 +406,10 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Search Button */}
+            {/* Mobile Search Button - show below lg (where desktop search bar is hidden) */}
             <button
               type="button"
-              className="pk-btn pk-btn-outline h-10 w-10 lg:hidden shrink-0 hover:bg-accent/70"
+              className="pk-btn pk-btn-outline h-9 w-9 md:h-10 md:w-10 lg:hidden shrink-0 hover:bg-accent/70"
               onClick={() => setIsMobileSearchOpen(true)}
               aria-label="Search"
             >
@@ -421,7 +419,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="pk-btn pk-btn-outline h-10 w-10 md:hidden shrink-0 hover:bg-accent/70"
+              className="pk-btn pk-btn-outline h-9 w-9 md:h-10 md:w-10 md:hidden shrink-0 hover:bg-accent/70"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileMenuOpen}
               onClick={() => { setIsMobileMenuOpen((v) => !v); setIsCategoryOpen(false); }}
@@ -505,43 +503,49 @@ export default function Navbar() {
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4">
               {/* Quick Stats */}
-              <div className="mb-4 grid grid-cols-3 gap-2">
-                <button onClick={() => { navigate('/wishlist'); closeAll(); }} className="flex flex-col items-center gap-1.5 rounded-xl bg-card/80 border p-3 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                  <Heart className="h-5 w-5 text-red-500" />
-                  <span className="text-xs font-medium">Wishlist</span>
+              <div className="mb-6 grid grid-cols-3 gap-3">
+                <button onClick={() => { navigate('/wishlist'); closeAll(); }} className="flex flex-col items-center gap-2 rounded-2xl bg-card/60 backdrop-blur-md border border-white/10 p-4 transition-all hover:bg-card/80 active:scale-95 shadow-lg shadow-black/5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 mb-1">
+                    <Heart className="h-5 w-5 text-red-500" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Wishlist</span>
                 </button>
-                <button onClick={() => { navigate('/cart'); closeAll(); }} className="flex flex-col items-center gap-1.5 rounded-xl bg-card/80 border p-3 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                  <ShoppingCart className="h-5 w-5 text-primary" />
-                  <span className="text-xs font-medium">Cart ({cartItemsCount})</span>
+                <button onClick={() => { navigate('/cart'); closeAll(); }} className="flex flex-col items-center gap-2 rounded-2xl bg-card/60 backdrop-blur-md border border-white/10 p-4 transition-all hover:bg-card/80 active:scale-95 shadow-lg shadow-black/5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 mb-1">
+                    <ShoppingCart className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Cart</span>
                 </button>
-                <button onClick={() => { navigate('/orders'); closeAll(); }} className="flex flex-col items-center gap-1.5 rounded-xl bg-card/80 border p-3 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                  <Package className="h-5 w-5 text-emerald-500" />
-                  <span className="text-xs font-medium">Orders</span>
+                <button onClick={() => { navigate('/orders'); closeAll(); }} className="flex flex-col items-center gap-2 rounded-2xl bg-card/60 backdrop-blur-md border border-white/10 p-4 transition-all hover:bg-card/80 active:scale-95 shadow-lg shadow-black/5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 mb-1">
+                    <Package className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Orders</span>
                 </button>
               </div>
 
               {/* Main Navigation */}
-              <div className="mb-4">
-                <div className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Menu</div>
-                <nav className="grid gap-1.5">
+              <div className="mb-6">
+                <div className="mb-4 px-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Main Menu</div>
+                <nav className="grid gap-2">
                   {[
-                    { icon: Home, label: 'Home', action: goHomeTop, color: 'blue' },
-                    { icon: Grid3x3, label: 'Categories', action: () => goToSection('categories'), color: 'purple' },
-                    { icon: Package, label: 'Shop', action: () => goToSection('shop'), color: 'emerald' },
-                    { icon: ShoppingCart, label: 'Cart', action: () => { navigate('/cart'); closeAll(); }, color: 'sky' },
-                    { icon: Heart, label: 'Wishlist', action: () => { navigate('/wishlist'); closeAll(); }, color: 'pink' },
-                    { icon: Package, label: 'Orders', action: () => { navigate('/orders'); closeAll(); }, color: 'orange' },
+                    { icon: Home, label: 'Home', action: goHomeTop, bg: 'bg-blue-500/10', text: 'text-blue-500' },
+                    { icon: Grid3x3, label: 'Categories', action: () => goToSection('categories'), bg: 'bg-purple-500/10', text: 'text-purple-500' },
+                    { icon: Package, label: 'Shop', action: () => goToSection('shop'), bg: 'bg-emerald-500/10', text: 'text-emerald-500' },
+                    { icon: ShoppingCart, label: 'My Cart', action: () => { navigate('/cart'); closeAll(); }, bg: 'bg-sky-500/10', text: 'text-sky-500' },
+                    { icon: Heart, label: 'Saved Items', action: () => { navigate('/wishlist'); closeAll(); }, bg: 'bg-pink-500/10', text: 'text-pink-500' },
                   ].map((item) => (
                     <button
                       key={item.label}
                       type="button"
-                      className="group flex h-14 w-full items-center gap-4 rounded-xl bg-card/50 px-4 text-left transition-all duration-200 hover:bg-accent/80 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-transparent hover:border-primary/20"
+                      className="group flex h-14 w-full items-center gap-4 rounded-2xl bg-card/40 backdrop-blur-sm px-4 text-left transition-all duration-300 hover:bg-card/70 hover:translate-x-1 active:scale-[0.98] border border-white/5 shadow-sm"
                       onClick={item.action}
                     >
-                      <div className={`flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-${item.color}-500/10 to-${item.color}-600/10 group-hover:from-${item.color}-500/20 group-hover:to-${item.color}-600/20 transition-colors`}>
-                        <item.icon className="h-4.5 w-4.5" />
+                      <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl transition-all group-hover:scale-110", item.bg)}>
+                        <item.icon className={cn("h-5 w-5", item.text)} />
                       </div>
-                      <span className="text-sm font-medium">{item.label}</span>
+                      <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                      <ArrowRight className="ml-auto h-4 w-4 opacity-0 -translate-x-2 transition-all group-hover:opacity-40 group-hover:translate-x-0" />
                     </button>
                   ))}
                 </nav>

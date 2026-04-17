@@ -7,6 +7,7 @@ import { formatPriceINR } from '../lib/format';
 import { categorySectionId } from '../lib/slug';
 import { scrollToId } from '../lib/scroll';
 import ProductCard from '../components/products/ProductCard';
+import CinematicProductGrid from '../components/products/CinematicProductGrid';
 import { type SortBy, useCatalogStore } from '../stores/catalogStore';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '../lib/products';
@@ -28,7 +29,7 @@ const MARQUEE_ROW1 = [
 
 const MARQUEE_ROW2 = [
   { url: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=300&q=70', label: 'Ray-Ban' },
-  { url: 'https://images.unsplash.com/photo-1610792516307-ea5c9fbaca49?auto=format&fit=crop&w=300&q=70', label: 'Galaxy S24 Ultra' },
+  { url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=600&q=80', label: 'Galaxy S24 Ultra' },
   { url: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=300&q=70', label: 'ROG Gaming' },
   { url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=70', label: 'Luxury Bag' },
   { url: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=300&q=70', label: 'Nintendo Switch' },
@@ -308,13 +309,7 @@ export default function Home() {
       .slice(0, 8);
   }, [products]);
 
-  const flashSaleProducts = useMemo(() => {
-    return [...products]
-      .filter(p => (p.quantity || 0) > 0 && p.comparePrice && p.comparePrice > p.price)
-      .sort((a, b) => (b.comparePrice! - b.price) - (a.comparePrice! - a.price))
-      .slice(0, 6);
-  }, [products]);
-
+  
   const newArrivals = useMemo(() => {
     return [...products]
       .filter((p) => (p.quantity || 0) > 0)
@@ -331,7 +326,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           CINEMATIC HERO SECTION
           ═══════════════════════════════════════════ */}
-      <section className="overflow-hidden relative pk-hero-bg pk-grid" style={{ minHeight: '88vh' }}>
+      <section className="overflow-hidden relative pk-hero-bg pk-grid" style={{ minHeight: 'clamp(500px, 88vh, 1000px)' }}>
         {/* Cinematic Slideshow Background */}
         <CinematicBg overlay="dark" interval={7000} />
 
@@ -351,21 +346,22 @@ export default function Home() {
         <div className="absolute inset-x-0 top-0 z-20 py-1 text-center text-xs font-semibold text-white/90 bg-gradient-to-r from-primary/80 via-sky-500/80 to-emerald-500/80 backdrop-blur-sm">
           <span className="inline-flex items-center gap-1.5">
             <Zap className="w-3 h-3" />
-            NEW: Flash Sale Live — Up to 70% OFF on Premium Tech!
+            <span className="hidden xs:inline">NEW: Flash Sale Live — Up to 70% OFF on Premium Tech!</span>
+            <span className="xs:hidden">Flash Sale — Up to 70% OFF!</span>
           </span>
         </div>
 
         {/* Hero content */}
-        <div className="relative z-20 flex items-center" style={{ minHeight: '88vh' }}>
-          <div className="pk-container py-24">
-            <div className="grid gap-12 items-center lg:grid-cols-2 xl:grid-cols-[1fr_520px]">
+        <div className="relative z-20 flex items-center" style={{ minHeight: 'clamp(500px, 88vh, 1000px)' }}>
+          <div className="pk-container py-16 sm:py-20 md:py-24">
+            <div className="grid gap-8 lg:gap-12 items-center lg:grid-cols-2 xl:grid-cols-[1fr_520px]">
               {/* Left Content */}
               <div className="text-center lg:text-left">
-                <div className="inline-flex gap-2 items-center px-4 py-2 text-sm font-semibold rounded-full bg-primary/15 text-primary backdrop-blur-sm border border-primary/20 pk-slide-up">
-                  <Zap className="w-4 h-4" />
+                <div className="inline-flex gap-2 items-center px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-full bg-primary/15 text-primary backdrop-blur-sm border border-primary/20 pk-slide-up">
+                  <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                   India's #1 Modern Megastore
                 </div>
-                <h1 className="mt-5 text-4xl font-bold tracking-tight pk-slide-up pk-delay-100 sm:text-5xl lg:text-6xl xl:text-7xl">
+                <h1 className="mt-4 text-3xl font-bold tracking-tight pk-slide-up pk-delay-100 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
                   Discover{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r via-sky-400 to-emerald-400 from-primary">
                     tech
@@ -380,40 +376,38 @@ export default function Home() {
                     lifestyle
                   </span>.
                 </h1>
-                <p className="mx-auto mt-5 max-w-prose text-base pk-slide-up pk-delay-200 text-muted-foreground/90 lg:mx-0">
+                <p className="mx-auto mt-4 max-w-prose text-sm pk-slide-up pk-delay-200 text-muted-foreground/90 lg:mx-0">
                   Premium electronics, trendy fashion, and curated essentials.
-                  Enjoy seamless browsing, cinematic browsing, and blazing fast checkout.
+                  Enjoy seamless browsing and blazing fast checkout.
                 </p>
 
                 {/* Stats row */}
-                <div className="flex flex-wrap gap-6 mt-8 justify-center lg:justify-start pk-slide-up pk-delay-300">
+                <div className="flex flex-wrap gap-4 sm:gap-6 mt-6 justify-center lg:justify-start pk-slide-up pk-delay-300">
                   {[
                     { value: '50K+', label: 'Products' },
                     { value: '4.9★', label: 'Avg Rating' },
                     { value: '2M+', label: 'Happy Buyers' },
                   ].map((s) => (
                     <div key={s.label} className="text-center">
-                      <div className="text-2xl font-extrabold pk-gradient-text">{s.value}</div>
+                      <div className="text-xl sm:text-2xl font-extrabold pk-gradient-text">{s.value}</div>
                       <div className="text-xs text-muted-foreground font-medium">{s.label}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex flex-col gap-4 mt-8 pk-slide-up pk-delay-400 sm:flex-row sm:justify-center lg:justify-start">
+                <div className="flex flex-col gap-3 mt-6 pk-slide-up pk-delay-400 sm:flex-row sm:justify-center lg:justify-start">
                   <button
                     type="button"
                     onClick={() => scrollToId('shop')}
-                    className="px-8 h-13 text-base font-bold shadow-xl pk-btn pk-btn-primary pk-btn-shine pk-btn-liquid hover:shadow-2xl hover:shadow-primary/30"
-                    style={{ height: '52px' }}
+                    className="w-full sm:w-auto px-6 sm:px-8 h-12 text-sm sm:text-base font-bold shadow-xl pk-btn pk-btn-primary pk-btn-shine pk-btn-liquid hover:shadow-2xl hover:shadow-primary/30"
                   >
-                    <Zap className="w-5 h-5" />
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
                     Shop Now
                   </button>
                   <button
                     type="button"
                     onClick={() => scrollToId('categories')}
-                    className="px-6 h-13 text-base font-semibold pk-btn pk-btn-outline hover:bg-accent/80 backdrop-blur-sm"
-                    style={{ height: '52px' }}
+                    className="w-full sm:w-auto px-5 sm:px-6 h-12 text-sm sm:text-base font-semibold pk-btn pk-btn-outline hover:bg-accent/80 backdrop-blur-sm"
                   >
                     Explore Categories
                     <ArrowRight className="w-4 h-4" />
@@ -423,52 +417,31 @@ export default function Home() {
 
               {/* Right — Flash Sale Card */}
               <ScrollReveal direction="right" delay={200}>
-                <div className="p-6 rounded-3xl border shadow-2xl backdrop-blur-xl bg-card/70 pk-glass">
+                <div className="p-4 sm:p-6 rounded-3xl border shadow-2xl backdrop-blur-xl bg-card/70 pk-glass">
                   {/* Flash Sale Timer */}
-                  <div className="flex justify-between items-center mb-6">
+                  <div className="flex flex-wrap justify-between items-center mb-4 sm:mb-6 gap-2">
                     <div className="flex gap-2 items-center">
-                      <Flame className="w-6 h-6 text-orange-500" />
-                      <span className="text-lg font-bold">Flash Sale</span>
+                      <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
+                      <span className="text-base sm:text-lg font-bold">Flash Sale</span>
                     </div>
                     <FlashSaleTimer />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     {[
                       { icon: Truck, label: 'Free Shipping', sub: 'On ₹999+' },
                       { icon: Shield, label: 'Secure Pay', sub: '256-bit SSL' },
                       { icon: BadgeCheck, label: 'Easy Returns', sub: '7 Days' },
                     ].map((item) => (
-                      <div key={item.label} className="flex flex-col gap-2 items-center p-4 text-center rounded-2xl bg-muted/50">
-                        <item.icon className="w-6 h-6 text-primary" />
-                        <div className="text-xs font-semibold">{item.label}</div>
-                        <div className="text-[10px] text-muted-foreground">{item.sub}</div>
+                      <div key={item.label} className="flex flex-col gap-1.5 sm:gap-2 items-center p-2 sm:p-4 text-center rounded-2xl bg-muted/50">
+                        <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                        <div className="text-[10px] sm:text-xs font-semibold leading-tight">{item.label}</div>
+                        <div className="text-[9px] sm:text-[10px] text-muted-foreground">{item.sub}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 mt-6">
-                    {flashSaleProducts.slice(0, 4).map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => navigate(`/product/${p.id}`)}
-                        className="flex items-center gap-3 rounded-xl border bg-card/80 p-3 text-left transition-all hover:scale-[1.02] hover:border-primary/30 active:scale-[0.98] group"
-                      >
-                        <div className="overflow-hidden flex-shrink-0 w-12 h-12 rounded-lg bg-muted">
-                          <img src={p.images?.[0] || p.image} alt={p.name} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold truncate">{p.name}</div>
-                          <div className="text-sm font-bold text-primary">{formatPriceINR(p.price)}</div>
-                          {p.comparePrice && (
-                            <div className="text-[10px] text-muted-foreground line-through">{formatPriceINR(p.comparePrice)}</div>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                                  </div>
               </ScrollReveal>
             </div>
           </div>
@@ -480,53 +453,47 @@ export default function Home() {
           ═══════════════════════════════════════════ */}
       <MarqueeStrip />
 
-
-      {/* ═══════════════════════════════════════════
-          FLASH SALE CAROUSEL
-          ═══════════════════════════════════════════ */}
-      {flashSaleProducts.length > 0 && (
-        <section className="border-b">
-          <div className="py-12 pk-container">
-            <ProductCarousel title="🔥 Flash Deals" products={flashSaleProducts} badge="Up to 70% OFF" />
-          </div>
-        </section>
-      )}
-
       {/* ═══ FEATURED PRODUCTS ═══ */}
-      <section className="border-b pk-section-featured pk-featured-bg">
-        <div className="relative py-14 pk-container">
+      <section className="border-b pk-section-featured pk-featured-bg" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
+        <div className="relative py-10 sm:py-14 pk-container">
           <ScrollReveal>
-            <div className="flex gap-4 justify-between items-end mb-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between sm:items-end mb-8 sm:mb-10">
               <div>
-                <div className="inline-flex gap-2 items-center px-4 py-1.5 mb-3 text-xs font-bold rounded-full bg-gradient-to-r from-primary/15 to-sky-500/10 text-primary border border-primary/20 backdrop-blur-sm">
+                <div className="inline-flex gap-2 items-center px-3 sm:px-4 py-1.5 mb-2 sm:mb-3 text-xs font-bold rounded-full bg-gradient-to-r from-primary/15 to-sky-500/10 text-primary border border-primary/20 backdrop-blur-sm">
                   <Star className="w-3 h-3 fill-current" />
                   Editor's Choice
                 </div>
-                <h2 className="text-3xl font-black tracking-tight">Featured Picks</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Handpicked items loved by thousands of customers</p>
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl pk-text-premium mb-2 break-words">Featured Picks</h2>
+                <p className="mt-1.5 sm:mt-2 text-sm text-muted-foreground">Handpicked items loved by thousands of customers</p>
               </div>
               <button
                 type="button"
                 onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
-                className="hidden px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine sm:inline-flex"
+                className="hidden px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine sm:inline-flex shrink-0"
               >
                 View All
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </ScrollReveal>
-          <div className="pk-product-grid">
-            {featuredProducts.slice(0, 8).map((product, idx) => (
-              <ScrollReveal key={product.id} delay={idx * 70} direction="up">
-                <ProductCard product={product} />
-              </ScrollReveal>
-            ))}
+          {/* overflow-visible so card hover translateY isn't clipped */}
+          <CinematicProductGrid products={featuredProducts.slice(0, 8)} />
+          {/* Mobile view all button */}
+          <div className="mt-6 flex justify-center sm:hidden">
+            <button
+              type="button"
+              onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
+              className="px-6 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine"
+            >
+              View All Products
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* ═══ CATEGORIES ═══ */}
-      <section id="categories" className="scroll-mt-24 relative overflow-hidden">
+      <section id="categories" className="scroll-mt-20 relative overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
         {/* Fashion background */}
         <div className="absolute inset-0 z-0">
           <div
@@ -540,58 +507,58 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/90" />
         </div>
-        <div className="relative z-10 py-14 pk-container">
+        <div className="relative z-10 py-10 sm:py-14 pk-container">
           <ScrollReveal>
-            <div className="flex flex-col gap-4 justify-between items-start sm:flex-row sm:items-end mb-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-end mb-8 sm:mb-10">
               <div>
-                <div className="inline-flex gap-2 items-center px-4 py-1.5 mb-3 text-xs font-bold rounded-full bg-gradient-to-r from-emerald-500/15 to-teal-500/10 text-emerald-500 border border-emerald-500/20 backdrop-blur-sm">
+                <div className="inline-flex gap-2 items-center px-3 sm:px-4 py-1.5 mb-2 sm:mb-3 text-xs font-bold rounded-full bg-gradient-to-r from-emerald-500/15 to-teal-500/10 text-emerald-500 border border-emerald-500/20 backdrop-blur-sm">
                   Explore Collections
                 </div>
-                <h2 className="text-3xl font-black tracking-tight">Shop by Category</h2>
-                <p className="mt-2 text-sm text-muted-foreground">From the latest gadgets to runway fashion</p>
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl pk-text-premium mb-2 break-words">Shop by Category</h2>
+                <p className="mt-1.5 sm:mt-2 text-sm text-muted-foreground">From the latest gadgets to runway fashion</p>
               </div>
               <button
                 type="button"
                 onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
-                className="px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine"
+                className="px-5 h-10 text-sm pk-btn pk-btn-outline pk-btn-shine shrink-0"
               >
                 All Categories
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </ScrollReveal>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {categories.map((category, idx) => (
               <ScrollReveal key={category} delay={idx * 50} direction="scale">
                 <button
                   type="button"
-                  className="w-full group relative overflow-hidden rounded-2xl border border-white/10 bg-card/40 text-left shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/30 hover:bg-card/60 active:translate-y-0 backdrop-blur-md"
+                  className="w-full group relative overflow-hidden rounded-2xl border border-white/15 bg-card/50 text-left shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 hover:bg-card/70 active:translate-y-0 backdrop-blur-md"
                   onClick={() => {
                     setCurrentCategory(category);
                     scrollToId(categorySectionId(category));
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition duration-300 from-black/70 via-black/20 group-hover:opacity-100 z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t to-transparent opacity-0 transition duration-400 from-primary/50 via-primary/10 group-hover:opacity-100 z-10" />
                   <div className="aspect-[3/4] overflow-hidden bg-muted">
                     <img
                       src={categoryImages[category]}
                       alt={category}
                       loading="lazy"
                       decoding="async"
-                      className="object-cover w-full h-full transition duration-700 group-hover:scale-110 brightness-90"
+                      className="object-cover w-full h-full transition duration-700 group-hover:scale-115 brightness-90 group-hover:brightness-100"
                     />
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 p-4 z-20">
-                    <div className="text-sm font-bold text-white drop-shadow-md">{category}</div>
-                    <div className="flex justify-between items-center mt-1.5">
-                      <div className="text-xs text-white/75 font-medium">{categorizedProducts[category]?.length ?? 0} items</div>
-                      <div className="flex justify-center items-center w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 transition-all group-hover:translate-x-1 group-hover:bg-primary/80">
-                        <ArrowRight className="w-3.5 h-3.5 text-white" />
+                  <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-20">
+                    <div className="text-xs sm:text-sm font-bold text-white drop-shadow-lg">{category}</div>
+                    <div className="flex justify-between items-center mt-1">
+                      <div className="text-[10px] sm:text-xs text-white/80 font-medium">{categorizedProducts[category]?.length ?? 0} items</div>
+                      <div className="flex justify-center items-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 transition-all group-hover:translate-x-1 group-hover:bg-primary">
+                        <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" />
                       </div>
                     </div>
                   </div>
                   {/* Glass shimmer overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 </button>
               </ScrollReveal>
             ))}
@@ -610,50 +577,52 @@ export default function Home() {
       )}
 
       {/* ═══ SHOP GRID ═══ */}
-      <section id="shop" className="scroll-mt-24 pk-section-shop">
-        <div className="relative z-10 pt-8 pb-8 pk-container">
-          {/* Filter Controls */}
+      <section id="shop" className="scroll-mt-20 pk-section-shop" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 1200px' }}>
+        <div className="relative z-10 pt-8 pb-12 pk-container">
+          {/* Section heading */}
           <ScrollReveal>
-            <div className="pk-shop-filter-glass p-5 mb-6 rounded-2xl shadow-xl">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="flex gap-2 items-center text-sm font-semibold">
-                    <SlidersHorizontal className="w-4 h-4" />
-                    Sort by:
-                  </div>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortBy)}
-                    className="pk-select w-full sm:w-[200px]"
-                    aria-label="Sort products"
-                  >
-                    <option value="relevance">Relevance</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Top Rated</option>
-                    <option value="name">Name A-Z</option>
-                  </select>
-
-                  <select
-                    value={currentCategory}
-                    onChange={(e) => setCurrentCategory(e.target.value)}
-                    className="pk-select w-full sm:w-[200px]"
-                    aria-label="Filter by category"
-                  >
-                    <option value="All">All Categories</option>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between sm:items-end mb-6">
+              <div>
+                <div className="inline-flex gap-2 items-center px-3 sm:px-4 py-1.5 mb-2 text-xs font-bold rounded-full bg-gradient-to-r from-violet-500/15 to-primary/10 text-violet-500 border border-violet-500/20 backdrop-blur-sm">
+                  <SlidersHorizontal className="w-3 h-3" />
+                  All Products
                 </div>
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl pk-text-premium mb-2 break-words">Browse the Store</h2>
+              </div>
+              {/* Filter Controls */}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortBy)}
+                  className="pk-select w-full sm:w-[175px]"
+                  aria-label="Sort products"
+                >
+                  <option value="relevance">Relevance</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Top Rated</option>
+                  <option value="name">Name A-Z</option>
+                </select>
+
+                <select
+                  value={currentCategory}
+                  onChange={(e) => setCurrentCategory(e.target.value)}
+                  className="pk-select w-full sm:w-[175px]"
+                  aria-label="Filter by category"
+                >
+                  <option value="All">All Categories</option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
 
                 {(searchTerm.trim() || currentCategory !== 'All') && (
                   <button
                     type="button"
                     onClick={() => { setSearchTerm(''); setCurrentCategory('All'); }}
-                    className="px-3 h-9 text-sm pk-btn pk-btn-ghost text-destructive hover:bg-destructive/10"
+                    className="px-3 h-9 text-sm pk-btn pk-btn-ghost text-destructive hover:bg-destructive/10 shrink-0"
                   >
-                    Clear filters
+                    Clear
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -661,80 +630,69 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          {/* Product Grid */}
-          <div className="p-5 pk-section">
-            {!hasVisibleProducts ? (
-              <div className="p-12 text-center rounded-3xl border bg-card/70 pk-glass">
-                <div className="flex justify-center items-center mx-auto mb-4 w-20 h-20 rounded-full bg-muted/50">
-                  <Search className="w-10 h-10 text-muted-foreground/50" />
-                </div>
-                <div className="text-lg font-semibold">No products found</div>
-                <p className="mt-2 text-sm text-muted-foreground">Try clearing filters or searching with a different keyword.</p>
-                <button
-                  type="button"
-                  onClick={() => { setSearchTerm(''); setCurrentCategory('All'); }}
-                  className="px-6 mt-6 h-11 pk-btn pk-btn-primary pk-btn-shine"
-                >
-                  Reset Filters
-                </button>
+          {/* Product Grid — no overflow wrapper so card hovers aren't clipped */}
+          {!hasVisibleProducts ? (
+            <div className="p-8 sm:p-12 text-center rounded-3xl border bg-card/70 pk-glass">
+              <div className="flex justify-center items-center mx-auto mb-4 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted/50">
+                <Search className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground/50" />
               </div>
-            ) : (
-              <>
-                {/* Search Results View */}
-                {isSearching && (
-                  <section className="scroll-mt-24">
-                    <div className="flex gap-4 justify-between items-end mb-6">
+              <div className="text-base sm:text-lg font-semibold">No products found</div>
+              <p className="mt-2 text-sm text-muted-foreground">Try clearing filters or searching with a different keyword.</p>
+              <button
+                type="button"
+                onClick={() => { setSearchTerm(''); setCurrentCategory('All'); }}
+                className="px-6 mt-6 h-11 pk-btn pk-btn-primary pk-btn-shine"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Search Results View */}
+              {isSearching && (
+                <section className="scroll-mt-20">
+                  <div className="flex gap-4 justify-between items-end mb-6">
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold">Search Results</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">{filteredSorted.length} items for "{searchTerm}"</p>
+                    </div>
+                  </div>
+                  <CinematicProductGrid products={filteredSorted} />
+                </section>
+              )}
+
+              {/* Category Sections View */}
+              {!isSearching && visibleCategories.map((category) => {
+                const list = categorizedProducts[category] ?? [];
+                if (list.length === 0) return null;
+                return (
+                  <section
+                    key={category}
+                    id={categorySectionId(category)}
+                    className="pt-8 pb-10 border-b scroll-mt-20 last:border-b-0 last:pb-0"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 justify-between sm:items-end mb-5 sm:mb-6">
                       <div>
-                        <h3 className="text-xl font-bold">Search Results</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{filteredSorted.length} items for "{searchTerm}"</p>
+                        <h3 className="text-lg sm:text-xl font-bold tracking-tight">{category}</h3>
+                        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">{list.length} items</p>
                       </div>
+                      {currentCategory !== 'All' && (
+                        <button
+                          type="button"
+                          onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
+                          className="hidden px-4 h-9 text-sm pk-btn pk-btn-outline pk-btn-shine sm:inline-flex shrink-0"
+                        >
+                          Show All
+                        </button>
+                      )}
                     </div>
 
-                    <div className="pk-product-grid">
-                {filteredSorted.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+                    <CinematicProductGrid products={list} />
                   </section>
-                )}
-
-                {/* Category Sections View */}
-                {!isSearching && visibleCategories.map((category) => {
-                  const list = categorizedProducts[category] ?? [];
-                  if (list.length === 0) return null;
-                  return (
-                    <section
-                      key={category}
-                      id={categorySectionId(category)}
-                      className="pt-8 pb-10 border-b scroll-mt-24 last:border-b-0 last:pb-0"
-                    >
-                      <div className="flex gap-4 justify-between items-end mb-6">
-                        <div>
-                          <h3 className="text-xl font-bold tracking-tight">{category}</h3>
-                          <p className="mt-1 text-sm text-muted-foreground">{list.length} items</p>
-                        </div>
-                        {currentCategory !== 'All' && (
-                          <button
-                            type="button"
-                            onClick={() => { setCurrentCategory('All'); scrollToId('shop'); }}
-                            className="hidden px-4 h-9 text-sm pk-btn pk-btn-outline pk-btn-shine sm:inline-flex"
-                          >
-                            Show All
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="pk-product-grid">
-                        {list.map((product) => (
-                          <ProductCard key={product.id} product={product} />
-                        ))}
-                      </div>
-                    </section>
-                  );
-                })}
-              </>
-            )}
-          </div>
+                );
+              })}
+            </>
+          )}
         </div>
       </section>
 
@@ -742,24 +700,24 @@ export default function Home() {
       <section className="relative overflow-hidden border-t">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-sky-500/5 to-emerald-500/8 pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-        <div className="relative py-20 pk-container">
+        <div className="relative py-12 sm:py-16 md:py-20 pk-container">
           <ScrollReveal direction="scale">
-            <div className="mx-auto max-w-2xl text-center p-10 rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl shadow-2xl">
-              <div className="inline-flex gap-2 items-center px-5 py-2 mb-5 text-sm font-bold rounded-full bg-gradient-to-r from-primary/15 to-sky-500/10 text-primary border border-primary/20 backdrop-blur-sm">
-                <Zap className="w-4 h-4" />
+            <div className="mx-auto max-w-2xl text-center p-6 sm:p-10 md:p-12 rounded-[2.5rem] pk-newsletter-card">
+              <div className="inline-flex gap-2 items-center px-4 sm:px-5 py-2 mb-4 sm:mb-5 text-xs sm:text-sm font-bold rounded-full bg-gradient-to-r from-primary/15 to-sky-500/10 text-primary border border-primary/20 backdrop-blur-sm">
+                <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                 Stay Updated
               </div>
-              <h2 className="text-3xl font-black tracking-tight">Get exclusive deals</h2>
-              <p className="mt-3 text-muted-foreground">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Get exclusive deals</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
                 Subscribe and get early access to sales, new arrivals, and insider-only discounts.
               </p>
-              <div className="flex flex-col gap-3 mt-8 sm:flex-row">
+              <div className="flex flex-col gap-3 mt-6 sm:mt-8 sm:flex-row">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="flex-1 px-5 h-12 pk-input bg-background/60 backdrop-blur-sm border-white/15"
+                  className="flex-1 px-4 sm:px-5 h-12 pk-input bg-background/60 backdrop-blur-sm border-white/15"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && email.trim()) {
                       setSubscribed(true);
@@ -774,7 +732,7 @@ export default function Home() {
                     setSubscribed(true);
                     toast.success('Subscribed successfully!');
                   }}
-                  className="px-8 h-12 text-base font-semibold shadow-lg pk-btn pk-btn-primary pk-btn-shine pk-btn-liquid"
+                  className="px-6 sm:px-8 h-12 text-sm sm:text-base font-semibold shadow-lg pk-btn pk-btn-primary pk-btn-shine pk-btn-liquid"
                 >
                   Subscribe
                 </button>
