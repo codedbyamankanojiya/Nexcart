@@ -9,6 +9,13 @@ import { cn } from '../lib/utils';
 import { useCartStore } from '../stores/cartStore';
 import { useQuery } from '@tanstack/react-query';
 import { productsAPI } from '../lib/products';
+import CinematicProductBackground from '../components/products/CinematicProductBackground';
+import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Zoom } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/zoom';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -143,9 +150,15 @@ export default function ProductDetails() {
   ] as const;
 
   return (
-    <div className="pk-container py-6">
+    <div className="pk-container py-6 pb-28 md:pb-6">
+      <CinematicProductBackground product={product} />
       {/* Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <motion.div
+        className="flex flex-wrap items-center justify-between gap-3 mb-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      >
         <button type="button" onClick={() => navigate(-1)} className="pk-btn pk-btn-ghost h-9 px-3 text-sm">
           ← Back
         </button>
@@ -173,13 +186,68 @@ export default function ProductDetails() {
             Share
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Layout */}
       <div className="grid gap-6 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_480px]">
         {/* Left: Image Gallery */}
-        <section className="pk-section overflow-hidden p-4">
-          <div className="grid gap-4 lg:grid-cols-[80px_1fr]">
+        <motion.section
+          className="pk-section overflow-hidden p-4"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Mobile: swipeable cinematic gallery */}
+          <div className="md:hidden">
+            <Swiper
+              modules={[Pagination, Zoom]}
+              pagination={{ clickable: true }}
+              zoom
+              className="rounded-3xl overflow-hidden"
+              onSlideChange={(s) => {
+                setActiveImageIdx(s.activeIndex);
+                setIsImgLoaded(false);
+              }}
+            >
+              {images.map((src: string, idx: number) => (
+                <SwiperSlide key={`${product.id}-slide-${idx}`}>
+                  <div className="swiper-zoom-container">
+                    <div className="relative aspect-square w-full bg-muted">
+                      {!isImgLoaded && idx === activeImageIdx && <div className="absolute inset-0 pk-shimmer" />}
+                      <img
+                        src={src}
+                        alt={product.name}
+                        loading={idx === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        onError={handleImgError}
+                        onLoad={() => setIsImgLoaded(true)}
+                        className={cn(
+                          'absolute inset-0 h-full w-full object-cover transition-opacity duration-500',
+                          idx !== activeImageIdx ? 'opacity-100' : (!isImgLoaded ? 'opacity-0' : 'opacity-100')
+                        )}
+                      />
+                      {discountPct > 0 && (
+                        <div className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+                          -{discountPct}%
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setIsZoomed(true)}
+                        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-black/35 text-white backdrop-blur-md ring-1 ring-white/20"
+                        aria-label="Zoom image"
+                      >
+                        <ZoomIn className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          {/* Desktop: thumbnails + main image */}
+          <div className="hidden md:grid gap-4 lg:grid-cols-[80px_1fr]">
             {/* Thumbnails */}
             <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:flex-col lg:overflow-visible">
               {images.map((src: string, idx: number) => (
@@ -247,10 +315,15 @@ export default function ProductDetails() {
               </div>
             </div>
           ) : null}
-        </section>
+        </motion.section>
 
         {/* Right: Product Info (Sticky) */}
-        <aside className="pk-section p-6 lg:sticky lg:top-[88px] lg:self-start space-y-5">
+        <motion.aside
+          className="pk-section p-6 lg:sticky lg:top-[88px] lg:self-start space-y-5"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+        >
           {/* Title & Price */}
           <div>
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
@@ -388,7 +461,55 @@ export default function ProductDetails() {
               </div>
             </div>
           </div>
-        </aside>
+        </motion.aside>
+      </div>
+
+      {/* Mobile floating action bar */}
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-[80]">
+        <div className="pk-container pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+          <div
+            className="rounded-3xl border px-3 py-2.5"
+            style={{
+              background: 'hsl(var(--card) / 0.55)',
+              backdropFilter: 'blur(26px) saturate(1.6)',
+              borderColor: 'hsl(var(--border) / 0.35)',
+              boxShadow: '0 20px 60px -20px hsl(0 0% 0% / 0.55), 0 0 0 1px hsl(var(--primary) / 0.10)',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => { toggleWishlist(String(product.id)); toast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist'); }}
+                className={cn(
+                  'pk-btn h-12 w-12 p-0 rounded-2xl',
+                  isWishlisted ? 'border-primary text-primary bg-primary/10' : 'pk-btn-outline'
+                )}
+                aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <Heart className={cn('h-5 w-5', isWishlisted && 'fill-current')} />
+              </button>
+
+              <button
+                type="button"
+                disabled={product.quantity === 0}
+                onClick={handleAddToCart}
+                className="pk-btn pk-btn-primary pk-btn-shine flex-1 h-12 text-base font-bold shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Add
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { handleAddToCart(); navigate('/checkout'); }}
+                disabled={product.quantity === 0}
+                className="pk-btn h-12 px-4 bg-gradient-to-r from-primary to-sky-500 text-white font-extrabold shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl"
+              >
+                Buy
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Tabs Section */}

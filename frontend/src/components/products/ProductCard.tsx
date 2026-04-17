@@ -136,8 +136,8 @@ function ProductCard({ product }: ProductCardProps) {
           {/* Badge — top-left */}
           {badge && (
             <span className={cn(
-              'absolute left-3 top-3 z-20 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-white',
-              'bg-gradient-to-r shadow-md ring-1 ring-black/10 backdrop-blur-sm',
+              'absolute left-2.5 top-2.5 z-20 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-white',
+              'bg-gradient-to-r shadow-lg ring-1 ring-white/20 backdrop-blur-md',
               badge.col
             )}>
               {badge.icon}{badge.text}
@@ -229,12 +229,12 @@ function ProductCard({ product }: ProductCardProps) {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
           {/* Category row */}
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-extrabold tracking-[0.14em] uppercase text-primary/70">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[9px] font-black tracking-[0.16em] uppercase text-primary/80">
               {typeof product.category === 'object' ? product.category?.name : product.category || 'Product'}
             </span>
             {(product.averageRating || 0) >= 4.5 && (
-              <BadgeCheck className="h-3.5 w-3.5 text-sky-400 flex-shrink-0" />
+              <BadgeCheck className="h-3.5 w-3.5 text-sky-500 flex-shrink-0 drop-shadow-sm" />
             )}
           </div>
 
@@ -253,15 +253,15 @@ function ProductCard({ product }: ProductCardProps) {
                 <Star
                   key={s}
                   className={cn(
-                    'h-3 w-3',
+                    'h-2.5 w-2.5 sm:h-3 sm:w-3',
                     s <= ratingInt
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-muted text-muted-foreground/30'
+                      ? 'fill-amber-500 text-amber-500'
+                      : 'fill-muted text-muted-foreground/20'
                   )}
                 />
               ))}
             </div>
-            <span className="text-[11px] font-bold text-foreground/70">
+            <span className="text-[10px] sm:text-xs font-black text-foreground/80">
               {(product.averageRating || 0).toFixed(1)}
             </span>
             {(product.reviewCount || 0) > 0 && (
@@ -272,13 +272,13 @@ function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Price + CTA row */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-col leading-tight">
-              <span className="text-base font-black text-primary sm:text-lg">
+          <div className="flex items-center justify-between gap-1.5">
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-base font-black text-primary sm:text-lg font-display tracking-tight truncate">
                 {formatPriceINR(product.price)}
               </span>
               {product.comparePrice && product.comparePrice > product.price && (
-                <span className="text-[11px] text-muted-foreground line-through leading-none">
+                <span className="text-[10px] text-muted-foreground line-through leading-none mt-0.5">
                   {formatPriceINR(product.comparePrice)}
                 </span>
               )}
@@ -312,17 +312,25 @@ function ProductCard({ product }: ProductCardProps) {
               disabled={isOutOfStock}
               onClick={handleAddToCart}
               className={cn(
-                'sm:hidden flex h-8 items-center gap-1 px-3 rounded-xl text-[11px] font-bold flex-shrink-0',
-                'transition-all duration-300 ring-1 shadow-md',
+                'sm:hidden flex h-8 items-center gap-1.5 px-3 rounded-lg text-[10px] font-black flex-shrink-0',
+                'transition-all duration-300 shadow-md active:scale-95',
                 addAnimation
-                  ? 'bg-emerald-500 text-white ring-emerald-400/40'
+                  ? 'bg-emerald-500 text-white shadow-emerald-500/30'
                   : isOutOfStock
-                  ? 'bg-muted text-muted-foreground ring-border'
-                  : 'bg-primary text-white ring-primary/30 hover:bg-primary/90'
+                  ? 'bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600'
+                  : 'pk-btn-premium text-white'
               )}
             >
-              <ShoppingCart className="h-3 w-3" />
-              {isOutOfStock ? 'Out' : addAnimation ? '✓' : 'Add'}
+              {isOutOfStock ? (
+                'Sold Out'
+              ) : addAnimation ? (
+                <BadgeCheck className="h-3.5 w-3.5" />
+              ) : (
+                <>
+                  <Plus className="h-3 w-3" />
+                  Add
+                </>
+              )}
             </button>
           </div>
         </div>
