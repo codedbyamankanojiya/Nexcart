@@ -2,9 +2,16 @@ import { Router } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { AuthRequest, authenticateToken, requireAdmin } from '../middleware/auth';
+import Razorpay from 'razorpay';
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const createOrderSchema = z.object({
   shippingAddress: z.any(),
@@ -13,7 +20,7 @@ const createOrderSchema = z.object({
 });
 
 const paymentProviderSchema = z.object({
-  provider: z.enum(['mock']).default('mock'),
+  provider: z.enum(['mock', 'razorpay']).default('razorpay'),
 });
 
 router.post('/', authenticateToken, async (req: AuthRequest, res) => {
@@ -102,35 +109,72 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
       },
     });
 
-    const mockPaymentId = `mock_pay_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-    const mockOrderId = `mock_order_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+    if (provider === 'mock') {
+      // Mock payment flow (for testing)
+      const mockPaymentId = `mock_pay_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+      const mockOrderId = `mock_order_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 
-    await prisma.paymentTransaction.create({
-      data: {
-        orderId: order.id,
-        paymentId: mockOrderId,
-        amount: order.total,
-        currency: order.currency,
-        status: 'PENDING',
-        gateway: 'mock',
-        gatewayResponse: {
+      await prisma.paymentTransaction.create({
+        data: {
+          orderId: order.id,
+          paymentId: mockPaymentId,
+          amount: order.total,
+          currency: order.currency,
+          status: 'PENDING',
+          gateway: 'mock',
+          gatewayResponse: {
+            mockOrderId,
+            mockPaymentId,
+          },
+        },
+      });
+
+      res.status(201).json({
+        message: 'Order created. Payment pending.',
+        order,
+        payment: {
+          provider: 'mock',
           mockOrderId,
           mockPaymentId,
+          amount: order.total,
+          currency: order.currency,
         },
-      },
-    });
+      });
+    } else {
+      // Razorpay payment flow
+      const options = {
+        amount: order.total * 100, // Razorpay expects amount in paise
+        currency: 'INR',
+        receipt: `receipt_${order.id}`,
+        payment_capture: 1,
+      };
 
-    res.status(201).json({
-      message: 'Order created. Payment pending.',
-      order,
-      payment: {
-        provider: 'mock',
-        mockOrderId,
-        mockPaymentId,
-        amount: order.total,
-        currency: order.currency,
-      },
-    });
+      const razorpayOrder = await razorpay.orders.create(options);
+
+      await prisma.paymentTransaction.create({
+        data: {
+          orderId: order.id,
+          paymentId: razorpayOrder.id,
+          amount: order.total,
+          currency: order.currency,
+          status: 'PENDING',
+          gateway: 'razorpay',
+          gatewayResponse: razorpayOrder as any,
+        },
+      });
+
+      res.status(201).json({
+        message: 'Order created. Please complete payment.',
+        order,
+        payment: {
+          provider: 'razorpay',
+          orderId: razorpayOrder.id,
+          amount: order.total,
+          currency: order.currency,
+          key_id: process.env.RAZORPAY_KEY_ID,
+        },
+      });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });
