@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Star, Zap, Truck, Shield, ArrowRight, Flame, BadgeCheck, Search, SlidersHorizontal, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { categories, categoryImages, mockProducts } from '../data/mockProducts';
-import { formatPriceINR } from '../lib/format';
 import { categorySectionId } from '../lib/slug';
 import { scrollToId } from '../lib/scroll';
 import ProductCard from '../components/products/ProductCard';

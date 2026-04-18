@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Check, Clock, Package, ShoppingBag, X, ChevronRight, MapPin, Truck, PackageCheck, Copy, FileText, RefreshCw, Star, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShoppingBag } from 'lucide-react';
 import { formatPriceINR } from '../lib/format';
 import { cn } from '../lib/utils';
 import { ordersAPI, type Order as OrderType } from '../lib/orders';
 import { motion } from 'framer-motion';
 import CinematicProductBackground from '../components/products/CinematicProductBackground';
-
-interface OrderItem {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  qty: number;
-}
 
 interface Order extends OrderType {
   date: string;
@@ -23,11 +15,8 @@ interface Order extends OrderType {
 }
 
 export default function Orders() {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('All');
 
   useEffect(() => {
     fetchOrders();
@@ -117,7 +106,7 @@ export default function Orders() {
                       'inline-flex px-3 py-1 rounded-full text-xs font-medium',
                       order.status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-800' :
                       order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                      order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
+                      order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                       order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
                       'bg-gray-100 text-gray-800'
                     )}>
@@ -127,12 +116,12 @@ export default function Orders() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4">
-                      <img src={item.image} alt={item.name} className="h-16 w-16 rounded-lg object-cover" />
+                  {order.items.map((item: any) => (
+                    <div key={String(item.id)} className="flex items-center gap-4">
+                      <img src={String(item.image)} alt={String(item.name)} className="h-16 w-16 rounded-lg object-cover" />
                       <div className="flex-1">
-                        <h4 className="font-medium">{item.name}</h4>
-                        <p className="text-sm text-muted-foreground">Qty: {item.qty} × {formatPriceINR(item.price)}</p>
+                        <h4 className="font-medium">{String(item.name)}</h4>
+                        <p className="text-sm text-muted-foreground">Qty: {Number(item.qty || item.quantity)} × {formatPriceINR(Number(item.price))}</p>
                       </div>
                     </div>
                   ))}

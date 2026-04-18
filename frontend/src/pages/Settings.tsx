@@ -23,13 +23,12 @@ type SettingsSection = {
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [notifications, setNotifications] = useState(() => localStorage.getItem('notifications') !== 'false');
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('soundEnabled') !== 'false');
   const [autoPlayVideos, setAutoPlayVideos] = useState(() => localStorage.getItem('autoPlayVideos') !== 'false');
-  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'English');
-  const [isSaving, setIsSaving] = useState(false);
+  const [language] = useState(() => localStorage.getItem('language') || 'English');
 
   const handleLogout = async () => {
     try {

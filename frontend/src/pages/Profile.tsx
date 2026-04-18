@@ -11,7 +11,6 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -22,7 +21,6 @@ export default function Profile() {
   });
 
   const handleSave = async () => {
-    setIsLoading(true);
     try {
       // Update profile via API
       const response = await fetch('/api/user/profile', {
@@ -49,8 +47,6 @@ export default function Profile() {
       }
     } catch (error) {
       toast.error('Failed to update profile');
-    } finally {
-      setIsLoading(false);
     }
   };
 

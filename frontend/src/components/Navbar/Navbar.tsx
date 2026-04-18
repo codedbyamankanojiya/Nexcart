@@ -283,7 +283,7 @@ export default function Navbar() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm font-bold group-hover:text-primary transition-colors">{product.name}</div>
-                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{typeof product.category === 'object' ? product.category?.name : product.category}</div>
+                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{String(typeof product.category === 'object' && product.category && 'name' in product.category ? (product.category as any).name : product.category)}</div>
                         </div>
                         <div className="text-sm font-black text-primary">{formatPriceINR(product.price)}</div>
                       </button>
