@@ -2,28 +2,28 @@
 
 A comprehensive e-commerce marketplace platform built with React and Node.js, supporting multiple sellers, secure payments, and advanced product management.
 
-## Ã°Å¸Ââ€”Ã¯Â¸Â Project Structure
+## 📂 Project Structure
 
 ```
 NexCart/
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ backend/          # Node.js + Express API server
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ routes/   # API endpoints
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ middleware/ # Authentication & validation
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ server.ts # Main server file
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ prisma/       # Database schema & migrations
-Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ package.json  # Backend dependencies
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ frontend/         # React + TypeScript client
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ components/ # React components
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ pages/      # Page components
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ stores/     # State management
-Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ lib/        # Utilities & API calls
-Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ package.json  # Frontend dependencies
-Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ README.md
+├── backend/          # Node.js + Express API server
+│   ├── src/
+│   │   ├── routes/   # API endpoints
+│   │   ├── middleware/ # Authentication & validation
+│   │   └── server.ts # Main server file
+│   ├── prisma/       # Database schema & migrations
+│   └── package.json  # Backend dependencies
+├── frontend/         # React + TypeScript client
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── pages/      # Page components
+│   │   ├── stores/     # State management
+│   │   └── lib/        # Utilities & API calls
+│   └── package.json  # Frontend dependencies
+└── README.md
 ```
 
-## Ã°Å¸Å¡â‚¬ Features
+## 🚀 Features
 
 ### For Customers
 - Browse products by category
@@ -48,7 +48,7 @@ NexCart/
 - Platform analytics
 - Seller verification
 
-## Ã°Å¸â€ºÂ Ã¯Â¸Â Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 - **React 19** with TypeScript
@@ -68,7 +68,7 @@ NexCart/
 - **Zod** for validation
 - **bcrypt** for password hashing
 
-## Ã°Å¸â€œâ€¹ Setup Instructions
+## 📋 Setup Instructions
 
 ### Prerequisites
 - Node.js 18+
@@ -131,7 +131,7 @@ NexCart/
    npm run dev
    ```
 
-## Ã°Å¸Å’Â API Endpoints
+## 🌐 API Endpoints
 
 ### Authentication
 - `POST /api/auth/signup` - User registration
@@ -169,7 +169,7 @@ NexCart/
 - `GET /api/reviews/product/:productId` - Get product reviews
 - `POST /api/reviews` - Create review
 
-## Ã°Å¸â€Â Security Features
+## 🔒 Security Features
 
 - JWT-based authentication
 - Password hashing with bcrypt
@@ -179,14 +179,14 @@ NexCart/
 - SQL injection prevention via Prisma
 - Secure file upload with Cloudinary
 
-## Ã°Å¸â€œÂ± Responsive Design
+## 📱 Responsive Design
 
 The frontend is fully responsive and works across:
 - Desktop (1920px+)
 - Tablet (768px - 1024px)
 - Mobile (320px - 768px)
 
-## Ã°Å¸Å¡â‚¬ Deployment
+## 🚀 Deployment
 
 ### Frontend (Vercel)
 1. Connect repository to Vercel
@@ -200,7 +200,7 @@ The frontend is fully responsive and works across:
 3. Configure environment variables
 4. Deploy with PostgreSQL add-on
 
-## Ã°Å¸Â¤Â Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -208,11 +208,10 @@ The frontend is fully responsive and works across:
 4. Add tests if applicable
 5. Submit a pull request
 
-## Ã°Å¸â€œâ€ž License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Ã°Å¸â€œÅ¾ Support
+## 📞 Support
 
 For support and questions, please open an issue in the repository.
-
