@@ -30,7 +30,7 @@ function makeImages(base: string) {
 function makeSpecs(product: Product): ProductSpec[] {
   const cat = product.category;
   const common: ProductSpec[] = [
-    { label: 'Brand', value: 'PopKart Select' },
+    { label: 'Brand', value: 'NexCart Select' },
     { label: 'Model', value: `${product.name}` },
     { label: 'Category', value: cat },
     { label: 'In the box', value: 'Main unit, documentation' },
@@ -44,7 +44,7 @@ function makeSpecs(product: Product): ProductSpec[] {
       { label: 'Rear camera', value: '48MP + Ultra-wide' },
       { label: 'Battery', value: '5000mAh (typical)' },
       { label: 'Charging', value: 'Fast charging supported' },
-      { label: 'Connectivity', value: '5G, Wi‑Fi 6, Bluetooth 5.3' },
+      { label: 'Connectivity', value: '5G, Wiâ€‘Fi 6, Bluetooth 5.3' },
     ];
   }
 
@@ -160,7 +160,7 @@ function makeQA(product: Product): ProductQuestion[] {
       id: `${product.id}-q-${idx}`,
       question: q,
       answer: answers[idx] ?? answers[0]!,
-      answeredBy: ['PopKart Support', 'Seller', 'Verified Buyer'][idx % 3],
+      answeredBy: ['NexCart Support', 'Seller', 'Verified Buyer'][idx % 3],
       answeredAt: d.toISOString().slice(0, 10),
     };
   });

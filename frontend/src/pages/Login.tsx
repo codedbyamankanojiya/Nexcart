@@ -47,7 +47,7 @@ export default function Login() {
           </div>
           <h2 className="text-3xl font-bold">Welcome back</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            New to Popkart?{' '}
+            New to NexCart?{' '}
             <Link to="/signup" className="font-semibold text-primary hover:opacity-80">
               Create an account
             </Link>
@@ -72,7 +72,7 @@ export default function Login() {
                     value={formData.email}
                     onChange={handleChange}
                     className="pk-input pl-10"
-                    placeholder="Enter your email"
+                    placeholder="e.g. rahul@example.com"
                   />
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
@@ -135,7 +135,7 @@ export default function Login() {
 
             <div className="text-center pt-2 border-t border-border/50">
               <p className="text-sm text-muted-foreground">
-                Want to sell on Popkart?{' '}
+                Want to sell on NexCart?{' '}
                 <Link to="/signup?role=SELLER" className="font-semibold text-brand-2 hover:opacity-80">
                   Register as a seller
                 </Link>

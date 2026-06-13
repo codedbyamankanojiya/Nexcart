@@ -141,7 +141,7 @@ export default function Navbar() {
           <Link to="/" onClick={goHomeTop} className="flex items-center group flex-shrink-0">
             <img 
               src="/Logo.png" 
-              alt="PopKart"
+              alt="NexCart"
               className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>

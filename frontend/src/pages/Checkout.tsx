@@ -56,14 +56,14 @@ export default function Checkout() {
   const stepIndex = STEPS.findIndex(s => s.id === step);
 
   const applyCoupon = () => {
-    if (couponCode.toUpperCase() === 'POPKART20') {
+    if (couponCode.toUpperCase() === 'NEXCART20') {
       setCouponApplied(true);
       setCouponDiscount(subtotal * 0.2);
       toast.success('20% discount applied!');
     } else if (couponCode.toUpperCase() === 'FIRST50') {
       setCouponApplied(true);
       setCouponDiscount(50);
-      toast.success('₹50 discount applied!');
+      toast.success('â‚¹50 discount applied!');
     } else {
       toast.error('Invalid coupon code');
     }
@@ -132,7 +132,7 @@ export default function Checkout() {
       <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
         <div className="pk-container flex h-16 items-center justify-between">
           <Link to="/" className="text-xl font-bold tracking-tighter">
-            <span className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">PopKart</span>
+            <span className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">NexCart</span>
             <span className="text-primary">.</span>
           </Link>
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -194,7 +194,7 @@ export default function Checkout() {
                           <h4 className="font-semibold line-clamp-1 cursor-pointer hover:text-primary" onClick={() => navigate(`/product/${item.id}`)}>{item.name}</h4>
                           <div className="mt-1 flex items-center gap-1 text-xs">
                             <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700">
-                              ⭐ {item.rating}
+                              â­ {item.rating}
                             </span>
                             <span className="text-muted-foreground">{item.reviews} reviews</span>
                           </div>
@@ -211,7 +211,7 @@ export default function Checkout() {
                           <Trash2 className="h-4 w-4" />
                         </button>
                         <div className="flex items-center gap-1.5">
-                          <button type="button" onClick={() => updateQuantity(String(item.id), item.quantity - 1)} className="pk-btn pk-btn-outline h-7 w-7 p-0 flex items-center justify-center text-xs" disabled={item.quantity <= 1}>−</button>
+                          <button type="button" onClick={() => updateQuantity(String(item.id), item.quantity - 1)} className="pk-btn pk-btn-outline h-7 w-7 p-0 flex items-center justify-center text-xs" disabled={item.quantity <= 1}>âˆ’</button>
                           <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
                           <button type="button" onClick={() => updateQuantity(String(item.id), item.quantity + 1)} className="pk-btn pk-btn-outline h-7 w-7 p-0 flex items-center justify-center text-xs" disabled={item.quantity >= 5}>+</button>
                         </div>
@@ -315,7 +315,7 @@ export default function Checkout() {
                       </div>
                       <div className="mt-1 text-sm text-muted-foreground">Next business day</div>
                     </div>
-                    <div className="text-sm font-semibold">₹99</div>
+                    <div className="text-sm font-semibold">â‚¹99</div>
                   </label>
                 </div>
 
@@ -338,10 +338,10 @@ export default function Checkout() {
                 <h2 className="text-xl font-bold mb-5">Select Payment Method</h2>
                 <div className="space-y-3">
                   {[
-                    { id: 'upi', label: 'UPI', sub: 'Pay with any UPI app', icon: '💳', badge: 'Fastest' },
-                    { id: 'card', label: 'Credit/Debit Card', sub: 'Visa, Mastercard, RuPay', icon: '💳', badge: null },
-                    { id: 'nb', label: 'Net Banking', sub: 'All major banks supported', icon: '🏦', badge: null },
-                    { id: 'cod', label: 'Cash on Delivery', sub: 'Pay when you receive', icon: '💵', badge: null },
+                    { id: 'upi', label: 'UPI', sub: 'Pay with any UPI app', icon: 'ðŸ’³', badge: 'Fastest' },
+                    { id: 'card', label: 'Credit/Debit Card', sub: 'Visa, Mastercard, RuPay', icon: 'ðŸ’³', badge: null },
+                    { id: 'nb', label: 'Net Banking', sub: 'All major banks supported', icon: 'ðŸ¦', badge: null },
+                    { id: 'cod', label: 'Cash on Delivery', sub: 'Pay when you receive', icon: 'ðŸ’µ', badge: null },
                   ].map((method) => (
                     <label
                       key={method.id}
@@ -393,11 +393,11 @@ export default function Checkout() {
                       disabled={couponApplied || !couponCode.trim()}
                       className="pk-btn pk-btn-primary h-10 px-4 text-sm font-semibold disabled:opacity-50"
                     >
-                      {couponApplied ? '✓ Applied' : 'Apply'}
+                      {couponApplied ? 'âœ“ Applied' : 'Apply'}
                     </button>
                   </div>
                   <div className="mt-2 text-xs text-muted-foreground">
-                    Try: <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('POPKART20')}>POPKART20</span> for 20% off or <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('FIRST50')}>FIRST50</span> for ₹50 off
+                    Try: <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('NEXCART20')}>NEXCART20</span> for 20% off or <span className="font-semibold text-primary cursor-pointer" onClick={() => setCouponCode('FIRST50')}>FIRST50</span> for â‚¹50 off
                   </div>
                 </div>
 
@@ -493,7 +493,7 @@ export default function Checkout() {
                     ) : (
                       <>
                         <Lock className="h-4 w-4" />
-                        Place Order · {formatPriceINR(total)}
+                        Place Order Â· {formatPriceINR(total)}
                       </>
                     )}
                   </button>
@@ -535,7 +535,7 @@ export default function Checkout() {
                 </div>
                 {subtotal < 999 && (
                   <div className="rounded-xl bg-gradient-to-r from-primary/10 to-sky-500/10 p-3 text-xs text-center">
-                    Add <span className="font-semibold text-primary">₹{999 - subtotal}</span> more to get free shipping!
+                    Add <span className="font-semibold text-primary">â‚¹{999 - subtotal}</span> more to get free shipping!
                   </div>
                 )}
               </div>

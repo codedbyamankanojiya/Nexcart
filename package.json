@@ -1,5 +1,5 @@
 {
-  "name": "popkart-monorepo",
+  "name": "nexcart-monorepo",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run start --prefix backend\"",

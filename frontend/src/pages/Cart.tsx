@@ -53,14 +53,14 @@ export default function Cart() {
     const total = subtotal + shipping + tax - discount;
 
     const handleApplyCoupon = () => {
-        if (couponCode.toUpperCase() === 'POPKART20') {
+        if (couponCode.toUpperCase() === 'NEXCART20') {
             setCouponApplied(true);
             setCouponDiscount(subtotal * 0.2);
             toast.success('20% discount applied!');
         } else if (couponCode.toUpperCase() === 'FIRST50') {
             setCouponApplied(true);
             setCouponDiscount(50);
-            toast.success('₹50 discount applied!');
+            toast.success('â‚¹50 discount applied!');
         } else {
             toast.error('Invalid coupon code');
         }
@@ -120,7 +120,7 @@ export default function Cart() {
                     </h1>
                     <p className="mt-2 text-muted-foreground">
                         <span className="font-semibold text-foreground">{items.length}</span> {items.length === 1 ? 'item' : 'items'} in your cart
-                        {selectedItems.size > 0 && ` · ${selectedItems.size} selected`}
+                        {selectedItems.size > 0 && ` Â· ${selectedItems.size} selected`}
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -170,7 +170,7 @@ export default function Cart() {
                                                     : 'border-muted-foreground/30 hover:border-primary/50'
                                             )}
                                         >
-                                            {isSelected && <span className="text-white text-xs">✓</span>}
+                                            {isSelected && <span className="text-white text-xs">âœ“</span>}
                                         </button>
                                     </div>
 
@@ -199,7 +199,7 @@ export default function Cart() {
                                             </Link>
                                             <div className="mt-1.5 flex items-center gap-2">
                                                 <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                                                    ⭐ {((product as any).averageRating || (product as any).rating || 0).toFixed(1)}
+                                                    â­ {((product as any).averageRating || (product as any).rating || 0).toFixed(1)}
                                                 </span>
                                                 <span className="text-xs text-muted-foreground">{(product as any).reviewCount || (product as any).reviews || 0} reviews</span>
                                             </div>
@@ -309,13 +309,13 @@ export default function Cart() {
                                 disabled={couponApplied || !couponCode.trim()}
                                 className="pk-btn pk-btn-primary h-11 px-5 text-sm font-semibold disabled:opacity-50"
                             >
-                                {couponApplied ? '✓ Applied' : 'Apply'}
+                                {couponApplied ? 'âœ“ Applied' : 'Apply'}
                             </button>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
                             <span className="text-xs text-muted-foreground">Try:</span>
-                            <button onClick={() => setCouponCode('POPKART20')} className="text-xs font-semibold text-primary hover:underline">POPKART20</button>
-                            <span className="text-xs text-muted-foreground">·</span>
+                            <button onClick={() => setCouponCode('NEXCART20')} className="text-xs font-semibold text-primary hover:underline">NEXCART20</button>
+                            <span className="text-xs text-muted-foreground">Â·</span>
                             <button onClick={() => setCouponCode('FIRST50')} className="text-xs font-semibold text-primary hover:underline">FIRST50</button>
                         </div>
                     </div>
@@ -359,7 +359,7 @@ export default function Cart() {
                                 <div className="flex items-center justify-center gap-2 text-sm">
                                     <AlertCircle className="h-4 w-4 text-primary" />
                                     <span>Add</span>
-                                    <span className="font-bold text-primary">₹{999 - subtotal}</span>
+                                    <span className="font-bold text-primary">â‚¹{999 - subtotal}</span>
                                     <span>more for FREE shipping!</span>
                                 </div>
                                 <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
@@ -371,7 +371,7 @@ export default function Cart() {
                         {couponApplied && (
                             <div className="mt-4 rounded-xl bg-emerald-100/50 border border-emerald-500/20 p-3 flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
-                                    <span>✓</span>
+                                    <span>âœ“</span>
                                     Coupon applied: -{formatPriceINR(discount)}
                                 </div>
                                 <button type="button" onClick={() => { setCouponApplied(false); setCouponDiscount(0); }} className="text-xs text-emerald-600 hover:underline">
@@ -399,7 +399,7 @@ export default function Cart() {
                     {/* Trust Badges */}
                     <div className="grid grid-cols-2 gap-3">
                         {[
-                            { icon: Truck, title: 'Free Shipping', sub: 'Orders ₹999+' },
+                            { icon: Truck, title: 'Free Shipping', sub: 'Orders â‚¹999+' },
                             { icon: ShieldCheck, title: 'Easy Returns', sub: '7 day policy' },
                         ].map(({ icon: Icon, title, sub }) => (
                             <div key={title} className="flex items-center gap-3 rounded-xl border bg-card/80 p-4 pk-glass">

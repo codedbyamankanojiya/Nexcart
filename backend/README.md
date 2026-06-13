@@ -1,46 +1,46 @@
-# Popkart Backend Setup
+# NexCart Backend Setup
 
 ## Overview
 Complete backend implementation for a multi-vendor marketplace with authentication, product management, order processing, and payment integration.
 
 ## Features Implemented
 
-### 🔐 Authentication & Authorization
+### Ã°Å¸â€Â Authentication & Authorization
 - JWT-based authentication with signup/login/logout
 - Role-based access control (Customer, Seller, Admin)
 - Protected routes with middleware
 
-### 👥 User Management
+### Ã°Å¸â€˜Â¥ User Management
 - Customer profiles with address management
 - Seller onboarding with business information
 - Admin dashboard for user management
 - Profile updates and analytics
 
-### 🛍️ Product Management
+### Ã°Å¸â€ºÂÃ¯Â¸Â Product Management
 - Full CRUD operations for sellers
 - Product variants and inventory tracking
 - Advanced search and filtering
 - Category management with hierarchy
 - Image upload via Cloudinary
 
-### 🛒 Shopping Cart & Orders
+### Ã°Å¸â€ºâ€™ Shopping Cart & Orders
 - Persistent cart with database storage
-- Order processing workflow (Pending → Paid → Processing → Shipped → Delivered)
+- Order processing workflow (Pending Ã¢â€ â€™ Paid Ã¢â€ â€™ Processing Ã¢â€ â€™ Shipped Ã¢â€ â€™ Delivered)
 - Stock management and low-stock alerts
 - Order history and tracking
 
-### 💳 Payment Integration
+### Ã°Å¸â€™Â³ Payment Integration
 - Razorpay integration for Indian market
 - Secure payment processing
 - Transaction history
 - Escrow system for marketplace
 
-### ⭐ Reviews & Ratings
+### Ã¢Â­Â Reviews & Ratings
 - Customer reviews for purchased products
 - Rating statistics and distribution
 - Verified purchase badges
 
-### 📊 Analytics & Reporting
+### Ã°Å¸â€œÅ  Analytics & Reporting
 - Seller analytics dashboard
 - Sales tracking and revenue reports
 - Low stock notifications

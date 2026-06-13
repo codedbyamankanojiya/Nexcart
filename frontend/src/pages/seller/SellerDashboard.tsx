@@ -248,7 +248,7 @@ export default function SellerDashboard() {
               <Menu className="h-4 w-4" />
             </button>
             <Link to="/" className="text-xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">PopKart</span>
+              <span className="bg-gradient-to-r from-primary via-sky-500 to-emerald-500 bg-clip-text text-transparent">NexCart</span>
               <span className="text-primary">.</span>
               <span className="ml-1 text-sm text-muted-foreground font-normal">Seller Hub</span>
             </Link>
@@ -339,7 +339,7 @@ export default function SellerDashboard() {
                 <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
                 <div className="relative">
                   <div className="text-sm font-medium opacity-80">Seller Dashboard</div>
-                  <h2 className="mt-1 text-2xl font-bold">Welcome back, {user?.name?.split(' ')[0] || 'Seller'}! 👋</h2>
+                  <h2 className="mt-1 text-2xl font-bold">Welcome back, {user?.name?.split(' ')[0] || 'Seller'}! ðŸ‘‹</h2>
                   <p className="mt-2 text-sm opacity-80">Your store is performing well. Keep it up!</p>
                   <div className="mt-5 flex gap-3">
                     <Link to="/seller/products/new" className="flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-sm font-semibold backdrop-blur-sm transition-all hover:bg-white/30">
@@ -489,7 +489,7 @@ export default function SellerDashboard() {
                         <div className="font-semibold truncate">{product.name}</div>
                         <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                           <span>{product.sales} sold</span>
-                          <span>·</span>
+                          <span>Â·</span>
                           <span className="font-semibold text-primary">{formatPriceINR(product.revenue)}</span>
                         </div>
                       </div>
@@ -536,7 +536,7 @@ export default function SellerDashboard() {
                         </div>
                         <div>
                           <div className="font-semibold">{order.id}</div>
-                          <div className="mt-0.5 text-sm text-muted-foreground">{order.customer} · {order.items} items</div>
+                          <div className="mt-0.5 text-sm text-muted-foreground">{order.customer} Â· {order.items} items</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-6">
@@ -636,10 +636,10 @@ export default function SellerDashboard() {
                 <h3 className="text-lg font-bold mb-4">Performance Metrics</h3>
                 <div className="grid gap-4 sm:grid-cols-3">
                   {[
-                    { label: 'Avg Order Value', value: '₹1,824', icon: DollarSign },
+                    { label: 'Avg Order Value', value: 'â‚¹1,824', icon: DollarSign },
                     { label: 'Return Rate', value: '2.3%', icon: RefreshCw },
                     { label: 'Customer Retention', value: '68%', icon: Users },
-                    { label: 'Review Rating', value: '4.6★', icon: Star },
+                    { label: 'Review Rating', value: '4.6â˜…', icon: Star },
                     { label: 'Page Views', value: '12.4K', icon: Eye },
                     { label: 'Add to Cart Rate', value: '8.2%', icon: ShoppingCart },
                   ].map((metric) => (
@@ -666,7 +666,7 @@ export default function SellerDashboard() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="text-sm font-medium mb-2 block">Store Name</label>
-                    <input type="text" defaultValue="PopKart Store" className="pk-input" />
+                    <input type="text" defaultValue="NexCart Store" className="pk-input" />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">Business Email</label>

@@ -1,29 +1,29 @@
-# Popkart - Multi-Vendor Marketplace
+# NexCart - Multi-Vendor Marketplace
 
 A comprehensive e-commerce marketplace platform built with React and Node.js, supporting multiple sellers, secure payments, and advanced product management.
 
-## 🏗️ Project Structure
+## Ã°Å¸Ââ€”Ã¯Â¸Â Project Structure
 
 ```
-Popkart/
-├── backend/          # Node.js + Express API server
-│   ├── src/
-│   │   ├── routes/   # API endpoints
-│   │   ├── middleware/ # Authentication & validation
-│   │   └── server.ts # Main server file
-│   ├── prisma/       # Database schema & migrations
-│   └── package.json  # Backend dependencies
-├── frontend/         # React + TypeScript client
-│   ├── src/
-│   │   ├── components/ # React components
-│   │   ├── pages/      # Page components
-│   │   ├── stores/     # State management
-│   │   └── lib/        # Utilities & API calls
-│   └── package.json  # Frontend dependencies
-└── README.md
+NexCart/
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ backend/          # Node.js + Express API server
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ routes/   # API endpoints
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ middleware/ # Authentication & validation
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ server.ts # Main server file
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ prisma/       # Database schema & migrations
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ package.json  # Backend dependencies
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ frontend/         # React + TypeScript client
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ components/ # React components
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ pages/      # Page components
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ stores/     # State management
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ lib/        # Utilities & API calls
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ package.json  # Frontend dependencies
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ README.md
 ```
 
-## 🚀 Features
+## Ã°Å¸Å¡â‚¬ Features
 
 ### For Customers
 - Browse products by category
@@ -48,7 +48,7 @@ Popkart/
 - Platform analytics
 - Seller verification
 
-## 🛠️ Tech Stack
+## Ã°Å¸â€ºÂ Ã¯Â¸Â Tech Stack
 
 ### Frontend
 - **React 19** with TypeScript
@@ -68,7 +68,7 @@ Popkart/
 - **Zod** for validation
 - **bcrypt** for password hashing
 
-## 📋 Setup Instructions
+## Ã°Å¸â€œâ€¹ Setup Instructions
 
 ### Prerequisites
 - Node.js 18+
@@ -131,7 +131,7 @@ Popkart/
    npm run dev
    ```
 
-## 🌐 API Endpoints
+## Ã°Å¸Å’Â API Endpoints
 
 ### Authentication
 - `POST /api/auth/signup` - User registration
@@ -169,7 +169,7 @@ Popkart/
 - `GET /api/reviews/product/:productId` - Get product reviews
 - `POST /api/reviews` - Create review
 
-## 🔐 Security Features
+## Ã°Å¸â€Â Security Features
 
 - JWT-based authentication
 - Password hashing with bcrypt
@@ -179,14 +179,14 @@ Popkart/
 - SQL injection prevention via Prisma
 - Secure file upload with Cloudinary
 
-## 📱 Responsive Design
+## Ã°Å¸â€œÂ± Responsive Design
 
 The frontend is fully responsive and works across:
 - Desktop (1920px+)
 - Tablet (768px - 1024px)
 - Mobile (320px - 768px)
 
-## 🚀 Deployment
+## Ã°Å¸Å¡â‚¬ Deployment
 
 ### Frontend (Vercel)
 1. Connect repository to Vercel
@@ -200,7 +200,7 @@ The frontend is fully responsive and works across:
 3. Configure environment variables
 4. Deploy with PostgreSQL add-on
 
-## 🤝 Contributing
+## Ã°Å¸Â¤Â Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -208,11 +208,11 @@ The frontend is fully responsive and works across:
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+## Ã°Å¸â€œâ€ž License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+## Ã°Å¸â€œÅ¾ Support
 
 For support and questions, please open an issue in the repository.
 

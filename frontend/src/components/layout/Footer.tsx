@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="pk-container py-10">
                     <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
                         <div>
-                            <div className="text-lg font-semibold">About PopKart</div>
+                            <div className="text-lg font-semibold">About NexCart</div>
                             <p className="mt-2 text-sm text-muted-foreground">
                                 Your one-stop shop for the latest in tech, fashion, gadgets and more. Built for speed and
                                 mobile-first usability.
@@ -34,10 +34,10 @@ export default function Footer() {
                         <div>
                             <div className="text-lg font-semibold">Contact</div>
                             <p className="mt-2 text-sm text-muted-foreground">Mumbai, India</p>
-                            <p className="mt-1 text-sm text-muted-foreground">support@popkart.com</p>
+                            <p className="mt-1 text-sm text-muted-foreground">support@nexcart.com</p>
                         </div>
                     </div>
-                    <div className="mt-10 text-xs text-muted-foreground">&copy; {new Date().getFullYear()} PopKart</div>
+                    <div className="mt-10 text-xs text-muted-foreground">&copy; {new Date().getFullYear()} NexCart</div>
                 </div>
             </footer>
 

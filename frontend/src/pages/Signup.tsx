@@ -112,7 +112,7 @@ export default function Signup() {
                   value={formData.name}
                   onChange={handleChange}
                   className="pk-input"
-                  placeholder="Enter your full name"
+                  placeholder="e.g. Rahul Verma"
                 />
               </div>
 
@@ -131,7 +131,7 @@ export default function Signup() {
                     value={formData.email}
                     onChange={handleChange}
                     className="pk-input pl-10"
-                    placeholder="Enter your email"
+                    placeholder="e.g. rahul@example.com"
                   />
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
