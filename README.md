@@ -1,5 +1,7 @@
 # NexCart — Premium Multi-Vendor Marketplace
 
+> **Developed by [Aman Kanojiya](https://github.com/codedbyamankanojiya)**
+
 NexCart is a comprehensive, modern multi-vendor e-commerce platform featuring a cinematic dark-themed UI/UX, robust role-based access control, a seamless persistent shopping cart, and a mock billing/fulfillment workflow.
 
 This repository is organized as a monorepo containing both the React client (`frontend`) and the Node.js Express server (`backend`).
@@ -9,7 +11,7 @@ This repository is organized as a monorepo containing both the React client (`fr
 ## 📂 Project Structure & Architecture
 
 ```
-PopKart/ (Root)
+NexCart/ (Root)
 ├── backend/                  # Node.js + Express API Server (JavaScript)
 │   ├── src/
 │   │   ├── config/           # Database configuration
@@ -151,7 +153,7 @@ The easiest way to start developing is by running scripts from the root director
 1. **Clone the Repository**:
    ```bash
    git clone <repository-url>
-   cd PopKart
+   cd NexCart
    ```
 
 2. **Install All Dependencies**:
@@ -256,3 +258,7 @@ All routes are mounted under the `/api` prefix:
 
 ## 📄 License
 Licensed under the [MIT License](LICENSE).
+
+---
+
+*Crafted with 💖 by Aman Kanojiya.*
